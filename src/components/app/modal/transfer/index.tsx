@@ -64,7 +64,7 @@ interface Props extends AppModalTransferProps {
 const AppModalTransfer: React.FC<Props> = ({ open, accountFrom, accountTo, currency = "usdt", leverSymbol, successCallback, updateProps, ...rest }) => {
   const t = useTranslation();
   const { isSubAcc } = store.user;
-  const { isFuturesUsdtOpen, isFuturesCoinOpen, futuresUsdtTransferList, futuresCoinTransferList, leverConfigAry } = store.market;
+  const { isFuturesUsdtOpen, futuresUsdtTransferList, leverConfigAry } = store.market;
   const { currencyObj } = store.currency;
   const { convertCurrency } = store.balances;
 
@@ -82,30 +82,16 @@ const AppModalTransfer: React.FC<Props> = ({ open, accountFrom, accountTo, curre
   const [amount, setAmount] = useState(""); //划转金额
 
   const skipFrom = useMemo(() => {
-    const ary = accTo ? [accTo] : [];
-    if (accTo === AccountEnum.futures_u) {
-      ary.push(AccountEnum.futures_c);
-    } else if (accTo === AccountEnum.futures_c) {
-      ary.push(AccountEnum.futures_u);
-    }
-    return ary;
+    return accTo ? [accTo] : [];
   }, [accTo]);
   const skipTo = useMemo(() => {
-    const ary = accFrom ? [accFrom] : [];
-    if (accFrom === AccountEnum.futures_u) {
-      ary.push(AccountEnum.futures_c);
-    } else if (accFrom === AccountEnum.futures_c) {
-      ary.push(AccountEnum.futures_u);
-    }
-    return ary;
+    return accFrom ? [accFrom] : [];
   }, [accFrom]);
   const hasFuturesU = useMemo(() => accFrom === AccountEnum.futures_u || accTo === AccountEnum.futures_u, [accFrom, accTo]);
-  const hasFuturesC = useMemo(() => accFrom === AccountEnum.futures_c || accTo === AccountEnum.futures_c, [accFrom, accTo]);
   const alertUserOpenFutures = useMemo(() => {
     if (hasFuturesU && isFuturesUsdtOpen === false) return true;
-    if (hasFuturesC && isFuturesCoinOpen === false) return true;
     return false;
-  }, [hasFuturesU, hasFuturesC, isFuturesUsdtOpen, isFuturesCoinOpen]);
+  }, [hasFuturesU, isFuturesUsdtOpen]);
 
   const hasLever = useMemo(() => accFrom === AccountEnum.lever || accTo === AccountEnum.lever, [accFrom, accTo]);
   const leverSymbolList = useMemo(() => {
@@ -361,9 +347,7 @@ const AppModalTransfer: React.FC<Props> = ({ open, accountFrom, accountTo, curre
     if (hasLever) {
       if (!leverMarketName) return;
       const ary = leverMarketName.split("_");
-      if (hasFuturesC) {
-        return setCoin(ary[0]);
-      } else if (hasFuturesU) {
+      if (hasFuturesU) {
         return setCoin(ary[1]);
       }
       if (ary.includes(coin)) return;
@@ -380,7 +364,7 @@ const AppModalTransfer: React.FC<Props> = ({ open, accountFrom, accountTo, curre
   const init = useCallback(() => {
     //do something init
     setLoading(true);
-    let index = 6;
+    let index = 4;
     if (!store.currency.currencies) {
       store.currency.getCurrencies(finallyFun);
     } else {
@@ -396,18 +380,8 @@ const AppModalTransfer: React.FC<Props> = ({ open, accountFrom, accountTo, curre
     } else {
       index--;
     }
-    if (!store.market.isFuturesCoinOpen) {
-      store.market.getDapiAccountOpen(finallyFun);
-    } else {
-      index--;
-    }
     if (!store.market.futuresUsdtTransferList) {
       store.market.getFapiCoins(finallyFun);
-    } else {
-      index--;
-    }
-    if (!store.market.futuresCoinTransferList) {
-      store.market.getDapiCoins(finallyFun);
     } else {
       index--;
     }
@@ -471,7 +445,6 @@ const AppModalTransfer: React.FC<Props> = ({ open, accountFrom, accountTo, curre
               coin={coin}
               setCoin={setCoin}
               hasFuturesU={hasFuturesU}
-              hasFuturesC={hasFuturesC}
               leverSymbolList={leverSymbolList}
               leverCurrencyList={leverCurrencyList}
             />

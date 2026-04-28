@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import store from "store";
 import { get_balances, get_leverBalances } from "api/v4/balance";
-import { get_fapiBalanceList, get_dapiBalanceList } from "api/v4/futures";
+import { get_fapiBalanceList } from "api/v4/futures";
 import { get_balanceBalances } from "api/v4/financial";
 
 import usePriceCurrencyConvertCb from "hooks/usePriceCurrencyConvertCb";
@@ -9,7 +9,7 @@ import { AccountEnum, BalancesLeverProps, BalancesProps } from "store/balances";
 import { FormatBalancesLeverCurrencyProps, FormatBalancesLeverProps, FormatBalancesProps } from "./index";
 
 const Main = () => {
-  const { isFuturesUsdtOpen, isFuturesCoinOpen } = store.market;
+  const { isFuturesUsdtOpen } = store.market;
 
   const priceCurrencyConvertCb = usePriceCurrencyConvertCb();
 
@@ -25,8 +25,6 @@ const Main = () => {
         get_balanceBalances().then((data) => setAccBalances(spotAssetsConvert(data)));
       } else if (acc === AccountEnum.futures_u) {
         isFuturesUsdtOpen && get_fapiBalanceList().then((data) => setAccBalances(futuresConvert(data)));
-      } else if (acc === AccountEnum.futures_c) {
-        isFuturesCoinOpen && get_dapiBalanceList().then((data) => setAccBalances(futuresConvert(data)));
       }
 
       function spotAssetsConvert(data) {
@@ -82,7 +80,7 @@ const Main = () => {
         return ary;
       }
     },
-    [priceCurrencyConvertCb, isFuturesUsdtOpen, isFuturesCoinOpen]
+    [priceCurrencyConvertCb, isFuturesUsdtOpen]
   );
 };
 

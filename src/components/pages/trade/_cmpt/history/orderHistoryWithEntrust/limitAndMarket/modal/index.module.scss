@@ -6,8 +6,40 @@
   }
 }
 
+.drawer {
+  :global {
+    .ant-drawer-header {
+      padding: 16px 16px 0;
+      border-bottom: none;
+    }
+
+    .ant-drawer-title {
+      color: var(--az-colorv2-text-primary);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 22px;
+    }
+
+    .ant-drawer-extra {
+      line-height: 0;
+    }
+
+    .ant-drawer-body {
+      padding: 0 16px 16px;
+    }
+  }
+}
+
+.drawerClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .nav {
   padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
 
   > *:nth-child(1) {
     color: var(--az-colorv2-text-secondary);
@@ -39,10 +71,12 @@
       flex: none;
       display: flex;
       align-items: center;
+      font-size: 11px;
     }
     > *:nth-child(2) {
       text-align: var(--az-dir-text-right);
       word-break: break-all;
+      font-size: 12px;
 
       small {
         color: var(--az-colorv2-text-secondary);
