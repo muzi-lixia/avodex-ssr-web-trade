@@ -278,7 +278,7 @@ const Main: React.FC<Props> = ({ className, isHideOtherPairs, setHideOtherPairs,
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                               <path
                                 d="M5.34517 13.2416L13.7969 4.78985L12.6184 3.61133L4.16667 12.0631V13.2416H5.34517ZM6.03553 14.9083H2.5V11.3727L12.0292 1.84356C12.3547 1.51813 12.8822 1.51813 13.2077 1.84356L15.5647 4.20059C15.8902 4.52602 15.8902 5.05366 15.5647 5.3791L6.03553 14.9083ZM2.5 16.575H17.5V18.2416H2.5V16.575Z"
-                                fill="white"
+                                fill="var(--az-colorv2-text-secondary)"
                               />
                             </svg>
                           </button>
@@ -287,7 +287,7 @@ const Main: React.FC<Props> = ({ className, isHideOtherPairs, setHideOtherPairs,
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                               <path
                                 d="M16.6665 5.83329V17.5C16.6665 17.9602 16.2934 18.3333 15.8332 18.3333H4.1665C3.70627 18.3333 3.33317 17.9602 3.33317 17.5V5.83329H1.6665V4.16663H18.3332V5.83329H16.6665ZM4.99984 5.83329V16.6666H14.9998V5.83329H4.99984ZM5.83317 1.66663H14.1665V3.33329H5.83317V1.66663ZM9.1665 8.33329H10.8332V14.1666H9.1665V8.33329Z"
-                                fill="white"
+                                fill="var(--az-colorv2-text-secondary)"
                               />
                             </svg>
                           </button>

@@ -152,7 +152,7 @@ const Main: React.FC = () => {
   const [tvTs, setTvTs] = useState(0);
   const updateTv = useCallback(() => setTvTs(Date.now()), []);
 
-  if (isH5 && layoutH5ActiveKey !== LayoutH5ActiveKeyEnum.chart) return <></>;
+  if (isH5 && (!store.trade.isH5Expanded || layoutH5ActiveKey !== LayoutH5ActiveKeyEnum.chart)) return <></>;
 
   return (
     <div ref={el} className={styles.main}>
@@ -167,33 +167,25 @@ const Main: React.FC = () => {
               {chartType === ChartTypeEnum.depth && <CPMT_depth_nav option={option_depth} setOption={setOption_depth} />}
               {chartType === ChartTypeEnum.intotheblock && <CPMT_intotheblock_nav option={option_intotheblock} setOption={setOption_intotheblock} />}
             </AzScrollArrow>
-            <div className={styles.navRight}>
-              <button
-                className={cx("btnTxt btnHover", { [styles.navAtv]: chartType === ChartTypeEnum.tradingview })}
-                onClick={() => setChartType(ChartTypeEnum.tradingview)}
-              >
-                {t(isH5 ? "trade.chartBasic" : "trade.tradingView")}
-              </button>
-              <button
-                className={cx("btnTxt btnHover", { [styles.navAtv]: chartType === ChartTypeEnum.depth })}
-                onClick={() => setChartType(ChartTypeEnum.depth)}
-              >
-                {t(isH5 ? "trade.chartDepth" : "trade.depthMap")}
-              </button>
-              {!isH5 && (
-                <>
-                  {/* <button
-                    className={cx("btnTxt btnHover", { [styles.navAtv]: chartType === ChartTypeEnum.intotheblock })}
-                    onClick={() => setChartType(ChartTypeEnum.intotheblock)}
-                  >
-                    {t("trade.intotheblock")}
-                  </button> */}
-                  <button className={cx("btnTxt btnHover", styles.navZoom)} onClick={onFullScreen}>
-                    <AzSvg icon={isFullScreen ? "zoom-out" : "zoom-in"} />
-                  </button>
-                </>
-              )}
-            </div>
+            {!isH5 && (
+              <div className={styles.navRight}>
+                <button
+                  className={cx("btnTxt btnHover", { [styles.navAtv]: chartType === ChartTypeEnum.tradingview })}
+                  onClick={() => setChartType(ChartTypeEnum.tradingview)}
+                >
+                  {t("trade.tradingView")}
+                </button>
+                <button
+                  className={cx("btnTxt btnHover", { [styles.navAtv]: chartType === ChartTypeEnum.depth })}
+                  onClick={() => setChartType(ChartTypeEnum.depth)}
+                >
+                  {t("trade.depthMap")}
+                </button>
+                <button className={cx("btnTxt btnHover", styles.navZoom)} onClick={onFullScreen}>
+                  <AzSvg icon={isFullScreen ? "zoom-out" : "zoom-in"} />
+                </button>
+              </div>
+            )}
           </div>
           <div className={styles.content} key={store.app.networkOnlineTs}>
             {chartType === ChartTypeEnum.tradingview && (

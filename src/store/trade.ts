@@ -112,6 +112,7 @@ interface StateProps {
   //
   layoutAdvancedActiveKey: LayoutAdvancedActiveKeyEnum;
   layoutH5ActiveKey: LayoutH5ActiveKeyEnum;
+  isH5Expanded: boolean;
   //
   orderConfirm_limit: boolean;
   orderConfirm_market: boolean;
@@ -142,6 +143,7 @@ const trade = makeAutoObservable(
     //layout布局参数
     layoutAdvancedActiveKey: LayoutAdvancedActiveKeyEnum.order as StateProps["layoutAdvancedActiveKey"], //专业版视图激活的tab
     layoutH5ActiveKey: LayoutH5ActiveKeyEnum.chart as StateProps["layoutH5ActiveKey"], //H5视图激活的tab
+    isH5Expanded: false as StateProps["isH5Expanded"], //H5视图是否展开详情和图表
     //下单确认
     orderConfirm_limit: true as StateProps["orderConfirm_limit"], //限价单确认对话框
     orderConfirm_market: true as StateProps["orderConfirm_market"], //市价单确认对话框

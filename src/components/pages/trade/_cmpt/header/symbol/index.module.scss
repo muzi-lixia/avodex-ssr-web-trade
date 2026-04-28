@@ -52,14 +52,13 @@
       display: inline-block;
       width: 0;
       height: 0;
-      margin-inline-start: 4px;
+      margin-inline-start: 6px;
       vertical-align: 4px;
       border-inline-start: 4px solid transparent;
       border-inline-end: 4px solid transparent;
       border-bottom: 0;
       border-top: 4px solid;
       border-top-color: var(--az-colorv2-text-primary);
-      //transition: border-top-color 0.2s;
     }
 
     > *:nth-child(1) {
@@ -101,6 +100,18 @@
 .st {
   color: rgba(253, 87, 96, 1) !important;
   background-color: rgba(253, 87, 96, 0.1);
+}
+
+.h5MarketTag {
+  flex: none;
+  margin-inline-start: 6px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--az-colorv2-text-primary);
+  background-color: rgba(107, 95, 212, 0.15);
 }
 
 /*

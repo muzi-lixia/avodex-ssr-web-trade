@@ -10,7 +10,6 @@ import { get_currencyCgSupported } from "api/v4/price";
 
 import { Drawer, message } from "antd";
 import AzFontScale from "components/az/fontScale";
-import AzSvg from "components/az/svg";
 
 import CMPT_MarketTip from "../marketTip";
 import CPMT_market from "../../market";
@@ -131,6 +130,7 @@ const Main: React.FC = () => {
             {tag}
           </div>
         )}
+        {isH5 && <span className={styles.h5MarketTag}>{isLever ? t("trade.margin") : "Spot"}</span>}
         {!isH5 && store.app.layout !== LayoutEnum.classic && (
           <div ref={refPop} className={cx(styles.pop, { [styles.popTip]: store.trade.isMaintainTip })}>
             {/*{isVisible && <CPMT_market clsSearch={styles.search} isHidden={isHidden} />}*/}
@@ -148,17 +148,13 @@ const Main: React.FC = () => {
         <Drawer
           className={styles.drawer}
           closable={false}
-          title={t("trade.market2")}
+          title={null}
+          headerStyle={{ display: "none" }}
           placement="bottom"
           height="80vh"
           open={open}
           onClose={onClose}
           forceRender={true}
-          extra={
-            <button className={cx("btnTxt", "btnHover")} onClick={onClose}>
-              <AzSvg icon={`close`} />
-            </button>
-          }
         >
           <CPMT_market clsSearch={styles.search} isHidden={!open} />
         </Drawer>

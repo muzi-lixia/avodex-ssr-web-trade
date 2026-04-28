@@ -23,6 +23,7 @@ const Main: React.FC<Props> = ({ className, ary, depthType, maxAmount, openOrder
   // const router = useRouter();
 
   const { isNft } = store.market;
+  const { isH5 } = store.app;
   const { isDepthShowTotalPrice } = store.trade;
 
   const docFormat = useMemo(() => {
@@ -69,6 +70,7 @@ const Main: React.FC<Props> = ({ className, ary, depthType, maxAmount, openOrder
         styles.main,
         [depthType === LayEnum.ask ? styles.ask : styles.bid],
         { [styles.atv]: !!openOrderObj[isNft ? ary[2].nft || "" : ary[0]] },
+        isH5 && styles.main_h5,
         className
       )}
       {...rest}
@@ -77,7 +79,7 @@ const Main: React.FC<Props> = ({ className, ary, depthType, maxAmount, openOrder
       <div>
         <AzFontScale isLoop={true}>{docFormat.priceLab}</AzFontScale>
         <AzFontScale isLoop={true}>{docFormat.amountLab}</AzFontScale>
-        <AzFontScale isLoop={true}>{docFormat.totalLab}</AzFontScale>
+        {!isH5 && <AzFontScale isLoop={true}>{docFormat.totalLab}</AzFontScale>}
       </div>
     </div>
   );

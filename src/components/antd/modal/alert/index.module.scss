@@ -1,12 +1,18 @@
 .main {
   :global {
-    .ant-modal-root {
-      .ant-modal-body {
-        .ant-modal-confirm-body {
-          .ant-modal-confirm-content {
-            margin-top: 0;
-          }
+    .ant-modal-body {
+      .ant-modal-confirm-body {
+        .ant-modal-confirm-content {
+          margin-top: 0;
         }
+      }
+    }
+
+    .ant-modal-confirm-btns {
+      .ant-btn-default,
+      .ant-btn-primary {
+        font-size: 14px;
+        font-weight: 400;
       }
     }
 
@@ -23,8 +29,8 @@
   }
   .title {
     font-style: normal;
-    font-weight: 700;
-    font-size: 17px;
+    font-weight: 500;
+    font-size: 16px;
     line-height: 20px;
     margin: 0 -20px;
     padding: 0 20px;
