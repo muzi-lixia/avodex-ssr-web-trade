@@ -18,6 +18,7 @@ export interface SymbolFilterProps {
 export interface SymbolProps extends ObjAny {
   id: number; //市场id
   symbol: string; //市场名称
+  isBlack: boolean; //是否黑名单交易对
   quantityPrecision: number; //卖方币市场精度
   pricePrecision: number; //买方币市场精度
   plates: number[]; //板块列表id
@@ -31,6 +32,7 @@ export interface SymbolProps extends ObjAny {
   type: string; //类型 nft | normal
   filters?: SymbolFilterProps[]; //过滤器
 }
+type DisplayLevel = "FULL" | "SEARCH" | "DIRECT" | "NONE";
 
 export interface LeverSymbolProps extends ObjAny {
   // marketName: string; //市场名称
@@ -334,6 +336,16 @@ const market = makeAutoObservable(
       });
       return marketEtfConfig.includes(symbol);
     }, //判断是否是etf市场(新)
+    isMarketVisibleByDisplayLevel(displayLevel?: string, { allowSearch = true }: { allowSearch?: boolean } = {}): boolean {
+      if (!displayLevel) return false;
+      const level = displayLevel as DisplayLevel;
+      if (allowSearch) return level === "FULL" || level === "SEARCH";
+      return level === "FULL";
+    }, //判断展示级别是否可见
+    isMarketVisible(symbolCfg?: ObjAny | SymbolProps, { allowSearch = true }: { allowSearch?: boolean } = {}): boolean {
+      if (!symbolCfg || symbolCfg.state === "DELISTED") return false;
+      return this.isMarketVisibleByDisplayLevel(symbolCfg.displayLevel, { allowSearch });
+    }, //判断市场是否可见（统一过滤 NONE/DELISTED）
     isMarketOpenFn(symbolCfg: ObjAny | SymbolProps, { server, local }): boolean {
       const { state, nextState, nextStateTime } = symbolCfg;
       if (state === "ONLINE") return true;

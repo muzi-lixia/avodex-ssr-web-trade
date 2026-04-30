@@ -51,7 +51,7 @@ const Main: React.FC<Props> = ({ className, isHideOtherPairs, setHideOtherPairs,
   const t = useTranslation();
   const { isH5 } = store.app;
   const { openOrder, getOpenOrder } = store.balances;
-  const { name, type, formatName, isLever } = store.market;
+  const { name, type, formatName, isLever, config } = store.market;
 
   const [side, setSide] = useState<"" | TradeSideEnum>("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -263,7 +263,7 @@ const Main: React.FC<Props> = ({ className, isHideOtherPairs, setHideOtherPairs,
                       <div key={doc.orderId} className={cx(clsLi, styles.li)}>
                         <div>{doc._time}</div>
                         <div>
-                          <CMPT_btnPair disabled={loading} symbol={doc.symbol} />
+                          <CMPT_btnPair disabled={loading} symbol={doc.symbol} showBlackTipTooltip />
                         </div>
                         <div>{doc._type}</div>
                         <div className={doc._sideCls}>{doc._side}</div>
@@ -273,15 +273,17 @@ const Main: React.FC<Props> = ({ className, isHideOtherPairs, setHideOtherPairs,
                         <div>{doc._total}</div>
 
                         <div>
-                          <button disabled={loading} className={"btnTxt"} onClick={() => handleClickEdit(doc)} style={{ marginInlineEnd: "15px" }}>
-                            {/* <AzSvg icon="edit2" /> */}
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                              <path
-                                d="M5.34517 13.2416L13.7969 4.78985L12.6184 3.61133L4.16667 12.0631V13.2416H5.34517ZM6.03553 14.9083H2.5V11.3727L12.0292 1.84356C12.3547 1.51813 12.8822 1.51813 13.2077 1.84356L15.5647 4.20059C15.8902 4.52602 15.8902 5.05366 15.5647 5.3791L6.03553 14.9083ZM2.5 16.575H17.5V18.2416H2.5V16.575Z"
-                                fill="var(--az-colorv2-text-secondary)"
-                              />
-                            </svg>
-                          </button>
+                          {!config?.[doc.symbol]?.isBlack && (
+                            <button disabled={loading} className={"btnTxt"} onClick={() => handleClickEdit(doc)} style={{ marginInlineEnd: "15px" }}>
+                              {/* <AzSvg icon="edit2" /> */}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path
+                                  d="M5.34517 13.2416L13.7969 4.78985L12.6184 3.61133L4.16667 12.0631V13.2416H5.34517ZM6.03553 14.9083H2.5V11.3727L12.0292 1.84356C12.3547 1.51813 12.8822 1.51813 13.2077 1.84356L15.5647 4.20059C15.8902 4.52602 15.8902 5.05366 15.5647 5.3791L6.03553 14.9083ZM2.5 16.575H17.5V18.2416H2.5V16.575Z"
+                                  fill="var(--az-colorv2-text-secondary)"
+                                />
+                              </svg>
+                            </button>
+                          )}
                           <button disabled={loading} className={"btnTxt"} onClick={() => handleCancelOne(doc.orderId)}>
                             {/* <AzSvg icon="delete" /> */}
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
