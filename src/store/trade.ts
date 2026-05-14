@@ -19,6 +19,11 @@ export enum TradeTypeEnum { //交易类型
   trailingStop = "ENTRUST_TRACK",
 }
 
+export enum TradePanelEnum { //右侧面板顶层 Tab：现货 / AI 智能交易
+  spot = "SPOT",
+  aiTrading = "AI_TRADING",
+}
+
 export enum TradeOrderStateEnum { //交易订单状态
   NEW = "NEW", //新建 -  资金冻结成功之后的状态，此时还未提交到撮合。
   PLACED = "PLACED", //已委托 - 订单成功的挂在了订单簿上

@@ -21,6 +21,7 @@ import TradeStopLimit from "../../_cmpt/tradeStopLimit";
 import TradeTrailingStop from "../../_cmpt/tradeTrailingStop";
 import TradeNft from "../../_cmpt/tradeNft";
 import TradeTypeTab from "../../_cmpt/tradeTypeTab";
+import AiTrading from "../../_cmpt/aiTrading";
 
 import styles from "./index.module.scss";
 
@@ -36,11 +37,16 @@ const Main: React.FC<Props> = ({ hasFutures, hasEtf, tradeType, setTradeType }) 
   const { isLogin } = store.user;
 
   const [open, setOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
   const onClose = useCallback(() => {
     setOpen(false);
   }, []);
+  const onAiClose = useCallback(() => {
+    setAiOpen(false);
+  }, []);
   useEffect(() => {
     onClose();
+    onAiClose();
   }, [name]);
 
   const [tradeSide, setTradeSide] = useState(TradeSideEnum.buy);
@@ -78,6 +84,14 @@ const Main: React.FC<Props> = ({ hasFutures, hasEtf, tradeType, setTradeType }) 
         <button className={cx("btnTxt", styles.triggerBtnSell)} onClick={() => handleClickTrigger(TradeSideEnum.sell)}>
           {t("trade.sell") + " " + coin}
         </button>
+        {!isNft && (
+          <button className={cx("btnTxt", styles.triggerBtnAi)} onClick={() => setAiOpen(true)}>
+            <span className={styles.aiIcon} aria-hidden>
+              🤖
+            </span>
+            <span className={styles.aiLabel}>{t("trade.aiTrading")}</span>
+          </button>
+        )}
       </div>
 
       {/*{isLogin && (*/}
@@ -143,6 +157,24 @@ const Main: React.FC<Props> = ({ hasFutures, hasEtf, tradeType, setTradeType }) 
         </div>
 
         {/*<Asset />*/}
+      </Drawer>
+
+      <Drawer
+        className={cx(styles.drawer, styles.aiDrawer)}
+        closable={false}
+        title={null}
+        headerStyle={{ display: "none" }}
+        bodyStyle={{ padding: 0 }}
+        placement="bottom"
+        height="78vh"
+        open={aiOpen}
+        onClose={onAiClose}
+      >
+        <div className={styles.aiDrawerInner}>
+          <div className={styles.aiDrawerTitle}>{t("trade.aiTrading")}</div>
+          <div className={styles.aiDrawerDivider} />
+          <AiTrading />
+        </div>
       </Drawer>
       {/*)}*/}
     </>

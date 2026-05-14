@@ -31,10 +31,63 @@
       background-color: var(--az-colorv2-down);
     }
 
+    &.triggerBtnAi {
+      flex: 0 0 auto;
+      width: auto;
+      background: transparent;
+      color: var(--az-colorv2-text-secondary);
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      font-size: 10px;
+      line-height: 1;
+      gap: 2px;
+    }
+
     + * {
       margin-inline-start: 10px;
     }
   }
+}
+
+.aiIcon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.aiLabel {
+  font-size: 10px;
+  line-height: 1;
+  color: var(--az-colorv2-text-secondary);
+}
+
+.aiDrawer {
+  :global(.ant-drawer-content) {
+    border-radius: 20px 20px 0 0;
+    background: var(--az-colorv2-bg-surface);
+  }
+}
+
+.aiDrawerInner {
+  display: flex;
+  flex-direction: column;
+}
+
+.aiDrawerTitle {
+  font-size: 13px;
+  line-height: 13px;
+  color: var(--az-colorv2-text-primary);
+  font-weight: 700;
+  padding: 0 15px;
+  margin-top: 20px;
+}
+
+.aiDrawerDivider {
+  height: 1px;
+  background: var(--az-colorv2-bg-elevated);
+  margin-top: 16px;
 }
 
 .drawer {
