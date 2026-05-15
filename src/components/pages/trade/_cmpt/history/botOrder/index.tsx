@@ -1,9 +1,11 @@
-import React, { HTMLAttributes, useState } from "react";
+import React, { HTMLAttributes, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import cx from "classnames";
 import { Hooks, Util } from "@az/base";
 import store from "store";
 import CloseConfirmModal from "./CloseConfirmModal";
+import SlippageDialog from "./SlippageDialog";
+import ImgBotAvatar from "@/assets/img/gridBot/bot-avatar.png";
 import styles from "./index.module.scss";
 
 const { useTranslation } = Hooks;
@@ -73,16 +75,34 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
   const { isH5 } = store.app;
 
   const [closeTarget, setCloseTarget] = useState<BotOrderRow | null>(null);
+  const [slippageOpen, setSlippageOpen] = useState(false);
   const handleClose = (row: BotOrderRow) => setCloseTarget(row);
-  const handleCloseCancel = () => setCloseTarget(null);
+  const handleCloseCancel = () => {
+    setCloseTarget(null);
+    setSlippageOpen(false);
+  };
   const handleCloseConfirm = (_mode: "auto" | "manual") => {
     setCloseTarget(null);
+    setSlippageOpen(false);
+  };
+  const handleOpenSlippage = () => setSlippageOpen(true);
+  const handleSlippageCancel = () => setSlippageOpen(false);
+  const handleSlippageSave = (_slippage: string, _enabled: boolean) => {
+    setSlippageOpen(false);
   };
 
   const parsePair = (pair: string) => {
     const [base = "", quote = ""] = pair.split("/");
     return { base, quote };
   };
+
+  const latestPrice = useMemo(() => {
+    if (!closeTarget) return "--";
+    const symbol = closeTarget.pair.replace("/", "_").toLowerCase();
+    const ticker = store.trade.tickers.find((obj) => obj.s === symbol);
+    const quote = parsePair(closeTarget.pair).quote;
+    return ticker?.c ? `${ticker.c} ${quote}` : "--";
+  }, [closeTarget, store.trade.tickers]);
 
   if (isH5) {
     return (
@@ -126,8 +146,10 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
             quoteCurrency={parsePair(closeTarget.pair).quote}
             onCancel={handleCloseCancel}
             onConfirm={handleCloseConfirm}
+            onOpenSlippage={handleOpenSlippage}
           />
         )}
+        {slippageOpen && <SlippageDialog open latestPrice={latestPrice} onCancel={handleSlippageCancel} onSave={handleSlippageSave} />}
       </div>
     );
   }
@@ -149,7 +171,9 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
           {MOCK_ROWS.map((row) => (
             <div key={row.id} className={cx(clsLi, styles.li)}>
               <div className={styles.nameCol}>
-                <span className={styles.botAvatar} />
+                <span className={styles.botAvatar}>
+                  <img className={styles.botAvatarImg} src={ImgBotAvatar} alt="" />
+                </span>
                 <span className={styles.botName}>{row.name}</span>
               </div>
               <div>{row.pair}</div>
@@ -179,8 +203,10 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
           quoteCurrency={parsePair(closeTarget.pair).quote}
           onCancel={handleCloseCancel}
           onConfirm={handleCloseConfirm}
+          onOpenSlippage={handleOpenSlippage}
         />
       )}
+      {slippageOpen && <SlippageDialog open latestPrice={latestPrice} onCancel={handleSlippageCancel} onSave={handleSlippageSave} />}
     </div>
   );
 };

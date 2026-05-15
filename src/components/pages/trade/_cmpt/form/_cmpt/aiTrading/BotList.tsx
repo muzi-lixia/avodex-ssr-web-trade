@@ -1,6 +1,10 @@
 import React from "react";
 import cx from "classnames";
 import { Hooks } from "@az/base";
+import SvgIcon from "@az/SvgIcon";
+import SvgBotGrid from "@/assets/icon-svg/gridBot/bot-grid.svg";
+import SvgBotMartingale from "@/assets/icon-svg/gridBot/bot-martingale.svg";
+import SvgBotDca from "@/assets/icon-svg/gridBot/bot-dca.svg";
 import styles from "./index.module.scss";
 
 const { useTranslation } = Hooks;
@@ -18,21 +22,21 @@ const BOTS: BotItem[] = [
     id: "grid",
     titleKey: "gridBot.spotGrid",
     subtitleKey: "gridBot.spotGridSub",
-    icon: <span className={styles.botIcon}>📈</span>,
+    icon: <SvgIcon className={styles.botIcon} src={SvgBotGrid} />,
     comingSoon: false,
   },
   {
     id: "martingale",
     titleKey: "gridBot.martingale",
     subtitleKey: "gridBot.martingaleSub",
-    icon: <span className={styles.botIcon}>$</span>,
+    icon: <SvgIcon className={styles.botIcon} src={SvgBotMartingale} />,
     comingSoon: true,
   },
   {
     id: "dca",
     titleKey: "gridBot.dca",
     subtitleKey: "gridBot.dcaSub",
-    icon: <span className={styles.botIcon}>🪙</span>,
+    icon: <SvgIcon className={styles.botIcon} src={SvgBotDca} />,
     comingSoon: true,
   },
 ];

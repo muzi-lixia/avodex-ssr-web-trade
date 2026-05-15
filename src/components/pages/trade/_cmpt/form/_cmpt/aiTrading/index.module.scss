@@ -47,12 +47,10 @@
 }
 
 .botIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: 16px;
   height: 16px;
-  font-size: 12px;
+  flex-shrink: 0;
+  color: var(--az-colorv2-text-primary);
 }
 
 .botTitle {
@@ -152,6 +150,27 @@
   cursor: pointer;
 }
 
+.subRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.subChange {
+  font-size: 12px;
+  line-height: 14px;
+  color: var(--az-colorv2-text-tertiary);
+  font-family: "Inter-Regular", "Inter", sans-serif;
+}
+
+.subChangeUp {
+  color: var(--az-colorv2-trade-buy);
+}
+
+.subChangeDown {
+  color: var(--az-colorv2-trade-sell);
+}
+
 .fieldRow {
   display: flex;
   justify-content: space-between;
@@ -190,17 +209,25 @@
 }
 
 .smartIcon {
-  display: inline-block;
   width: 12px;
   height: 12px;
-  background: var(--az-colorv2-text-primary);
+  flex-shrink: 0;
+  color: var(--az-colorv2-text-primary);
 }
 
 .priceInputs {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 8px;
   margin-top: 12px;
+}
+
+.priceSep {
+  flex-shrink: 0;
+  color: var(--az-colorv2-text-tertiary);
+  font-size: 14px;
+  line-height: 1;
+  user-select: none;
 }
 
 .input {
@@ -410,8 +437,8 @@
 }
 
 .confirmTitle {
-  font-size: 15px;
-  line-height: 15px;
+  font-size: 18px;
+  line-height: 27px;
   font-family: "Inter-Bold", "Inter", sans-serif;
   font-weight: 700;
   color: var(--az-colorv2-text-primary);

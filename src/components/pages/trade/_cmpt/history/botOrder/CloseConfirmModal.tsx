@@ -14,9 +14,10 @@ interface Props {
   quoteCurrency: string;
   onCancel: () => void;
   onConfirm: (mode: SellMode) => void;
+  onOpenSlippage?: () => void;
 }
 
-const CloseConfirmModal: React.FC<Props> = ({ open, pair, baseCurrency, quoteCurrency, onCancel, onConfirm }) => {
+const CloseConfirmModal: React.FC<Props> = ({ open, pair, baseCurrency, quoteCurrency, onCancel, onConfirm, onOpenSlippage }) => {
   const t = useTranslation();
   const [mode, setMode] = useState<SellMode>("auto");
 
@@ -38,7 +39,15 @@ const CloseConfirmModal: React.FC<Props> = ({ open, pair, baseCurrency, quoteCur
           <span className={cx(styles.closeRadio, { [styles.closeRadioChecked]: mode === "auto" })} />
           <div className={styles.closeOptionText}>
             <div className={styles.closeOptionTitle}>{t("gridBot.closeAutoSell")}</div>
-            <div className={styles.closeOptionSub}>{t("gridBot.closeAutoSellSub")} ›</div>
+            <button
+              className={styles.closeOptionSubBtn}
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenSlippage && onOpenSlippage();
+              }}
+            >
+              {t("gridBot.closeAutoSellSub")} ›
+            </button>
           </div>
         </div>
 

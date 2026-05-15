@@ -31,10 +31,12 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 17px;
+      flex-wrap: nowrap;
+      gap: 12px;
       padding-right: 12px;
       flex: 0 0 auto;
-      min-width: 80px;
+      min-width: 110px;
+      word-break: normal;
     }
 
     &.profitBuy {
@@ -73,6 +75,15 @@
   background: rgba(219, 253, 0, 1);
   border: 0.5px solid rgba(43, 49, 0, 1);
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.botAvatarImg {
+  width: 10px;
+  height: 10px;
+  object-fit: contain;
 }
 
 .botName {
@@ -92,6 +103,8 @@
   line-height: 11px;
   color: var(--az-colorv2-trade-buy);
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .actionClose {
@@ -102,6 +115,8 @@
   line-height: 11px;
   color: var(--az-colorv2-trade-sell);
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* ============ Mobile Card Layout ============ */
@@ -349,6 +364,261 @@
 .closeBtnSubmit {
   flex: 1;
   height: 44px;
+  background: var(--az-colorv2-brand-primary);
+  color: var(--az-colorv2-text-button);
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: "Inter-Bold", "Inter", sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.closeOptionSubBtn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--az-colorv2-brand-primary);
+  cursor: pointer;
+  text-align: left;
+}
+
+/* ============ SlippageDialog (#21) ============ */
+.slippageOverlay {
+  position: fixed;
+  inset: 0;
+  background: var(--az-colorv2-bg-mask);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 16px;
+}
+
+.slippageBox {
+  width: 440px;
+  max-width: 100%;
+  background: var(--az-colorv2-bg-surface);
+  border: 1px solid var(--az-colorv2-border-default);
+  border-radius: 8px;
+  padding: 31px 29px 29px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.slippageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.slippageTitle {
+  font-size: 18px;
+  line-height: 27px;
+  color: var(--az-colorv2-text-primary);
+  font-family: "Inter-Bold", "Inter", sans-serif;
+  font-weight: 700;
+}
+
+.slippageBtnX {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--az-colorv2-text-quaternary);
+  cursor: pointer;
+}
+
+.slippageToggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 35px;
+  margin-top: 21px;
+}
+
+.slippageToggleLabel {
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--az-colorv2-text-primary);
+  font-family: "Inter-Bold", "Inter", sans-serif;
+  font-weight: 700;
+}
+
+.slippageToggle {
+  width: 42px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--az-colorv2-bg-elevated);
+  border: none;
+  padding: 0;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.slippageToggleOn {
+  background: var(--az-colorv2-brand-primary);
+}
+
+.slippageToggleKnob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--az-colorv2-text-button);
+  transition: transform 0.2s;
+}
+
+.slippageToggleOn .slippageToggleKnob {
+  transform: translateX(18px);
+}
+
+.slippageFieldLabel {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--az-colorv2-text-tertiary);
+  margin-top: 19px;
+}
+
+.slippageInputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--az-colorv2-bg-elevated);
+  border-radius: 8px;
+  height: 52px;
+  margin-top: 7px;
+}
+
+.slippageInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  height: 100%;
+  padding: 0 40px 0 14px;
+  font-size: 18px;
+  line-height: 18px;
+  color: var(--az-colorv2-text-primary);
+  font-family: "Inter-Bold", "Inter", sans-serif;
+  font-weight: 700;
+  -moz-appearance: textfield;
+  appearance: textfield;
+  box-sizing: border-box;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+.slippageInputUnit {
+  position: absolute;
+  right: 16px;
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--az-colorv2-text-tertiary);
+  font-family: "Inter-Semi Bold", "Inter", sans-serif;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.slippageQuickRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.slippageQuickBtn {
+  flex: 1;
+  height: 38px;
+  background: var(--az-colorv2-bg-elevated);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--az-colorv2-text-secondary);
+  font-family: "Inter-Semi Bold", "Inter", sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.slippageQuickBtnActive {
+  border-color: var(--az-colorv2-brand-primary);
+  color: var(--az-colorv2-text-primary);
+}
+
+.slippageInfoBox {
+  display: flex;
+  justify-content: space-between;
+  background: var(--az-colorv2-bg-elevated);
+  border-radius: 10px;
+  padding: 13px 14px;
+  margin-top: 18px;
+}
+
+.slippageInfoCol {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slippageInfoColRight {
+  align-items: flex-end;
+}
+
+.slippageInfoLabel {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--az-colorv2-text-tertiary);
+}
+
+.slippageInfoValue {
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--az-colorv2-text-primary);
+  font-family: "Inter-Bold", "Inter", sans-serif;
+  font-weight: 700;
+}
+
+.slippageHint {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--az-colorv2-text-tertiary);
+  margin-top: 18px;
+  word-break: break-word;
+}
+
+.slippageActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.slippageBtnCancel {
+  flex: 1;
+  height: 46px;
+  background: var(--az-colorv2-bg-elevated);
+  color: var(--az-colorv2-text-primary);
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: "Inter-Bold", "Inter", sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.slippageBtnSave {
+  flex: 1;
+  height: 46px;
   background: var(--az-colorv2-brand-primary);
   color: var(--az-colorv2-text-button);
   border: none;

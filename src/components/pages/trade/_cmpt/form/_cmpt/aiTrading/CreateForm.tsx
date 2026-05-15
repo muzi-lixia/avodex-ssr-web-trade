@@ -2,8 +2,10 @@ import React, { useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import cx from "classnames";
 import { Hooks } from "@az/base";
+import SvgIcon from "@az/SvgIcon";
 import store from "store";
 import ConfirmModal from "./ConfirmModal";
+import SvgSmartParam from "@/assets/icon-svg/gridBot/smart-param.svg";
 import styles from "./index.module.scss";
 
 const { useTranslation } = Hooks;
@@ -19,7 +21,25 @@ const CreateForm: React.FC<Props> = ({ onBack }) => {
   const t = useTranslation();
   const { isH5 } = store.app;
   const { name } = store.market;
+  const { tickers } = store.trade;
   const symbolLabel = (name || "btc_usdt").replace("_", "/").toUpperCase();
+
+  const change24h = useMemo(() => {
+    const ticker = tickers.find((obj) => obj.s === name);
+    const cvStr = ticker?.cv;
+    const crStr = ticker?.cr;
+    const cv = cvStr !== undefined ? parseFloat(cvStr) : 0;
+    const cr = crStr !== undefined ? parseFloat(crStr) : 0;
+    const cvSafe = Number.isNaN(cv) ? 0 : cv;
+    const crSafe = Number.isNaN(cr) ? 0 : cr;
+    const cvDisp = cvStr !== undefined && !Number.isNaN(cv) ? cvStr : "0";
+    const sign = cvSafe > 0 ? "+" : "";
+    return {
+      text: `${cvDisp} ${sign}${(crSafe * 100).toFixed(2)}%`,
+      isUp: cvSafe > 0,
+      isDown: cvSafe < 0,
+    };
+  }, [tickers, name]);
 
   const [minPrice, setMinPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
@@ -87,19 +107,30 @@ const CreateForm: React.FC<Props> = ({ onBack }) => {
 
       <div className={styles.subHeader}>
         <span className={styles.subLabel}>{t("gridBot.gridTrading")}</span>
-        <span className={styles.subValue}>{symbolLabel} ▾</span>
+        <span className={styles.subRight}>
+          <span
+            className={cx(styles.subChange, {
+              [styles.subChangeUp]: change24h.isUp,
+              [styles.subChangeDown]: change24h.isDown,
+            })}
+          >
+            {change24h.text}
+          </span>
+          <span className={styles.subValue}>{symbolLabel} ▾</span>
+        </span>
       </div>
 
       <div className={styles.fieldRow}>
         <span className={styles.fieldLabel}>{t("gridBot.priceRange")}（USDT）</span>
         <button className={styles.smartLink} onClick={handleSmartClick}>
-          <span className={styles.smartIcon} />
+          <SvgIcon className={styles.smartIcon} src={SvgSmartParam} />
           {t("gridBot.smartParam")}
         </button>
       </div>
 
       <div className={styles.priceInputs}>
         <input className={styles.input} type="number" placeholder={t("gridBot.minPrice")} value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
+        <span className={styles.priceSep}>-</span>
         <input className={styles.input} type="number" placeholder={t("gridBot.maxPrice")} value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
       </div>
 
