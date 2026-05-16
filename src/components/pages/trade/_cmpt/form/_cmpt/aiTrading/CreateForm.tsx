@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import cx from "classnames";
 import { Hooks } from "@az/base";
@@ -6,6 +6,14 @@ import SvgIcon from "@az/SvgIcon";
 import store from "store";
 import ConfirmModal from "./ConfirmModal";
 import SvgSmartParam from "@/assets/icon-svg/gridBot/smart-param.svg";
+import {
+  get_balance,
+  post_createBot,
+  post_profitPreview,
+  post_smartParams,
+  type BalanceRes,
+  type ProfitPreviewRes,
+} from "@/api/grid";
 import styles from "./index.module.scss";
 
 const { useTranslation } = Hooks;
@@ -22,6 +30,7 @@ const CreateForm: React.FC<Props> = ({ onBack }) => {
   const { isH5 } = store.app;
   const { name } = store.market;
   const { tickers } = store.trade;
+  const { isLogin } = store.user;
   const symbolLabel = (name || "btc_usdt").replace("_", "/").toUpperCase();
 
   const change24h = useMemo(() => {
@@ -48,20 +57,49 @@ const CreateForm: React.FC<Props> = ({ onBack }) => {
   const [investment, setInvestment] = useState<string>("");
   const [smart, setSmart] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [balance, setBalance] = useState<BalanceRes | null>(null);
+  const [previewData, setPreviewData] = useState<ProfitPreviewRes | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const availableUsdt = 500.09;
-  const minInvestment = 0.56;
+  useEffect(() => {
+    if (!isLogin) return;
+    get_balance("USDT")
+      .then(setBalance)
+      .catch(() => setBalance(null));
+  }, [isLogin]);
 
-  const perGridProfit = useMemo(() => {
+  useEffect(() => {
     const lo = parseFloat(minPrice);
     const hi = parseFloat(maxPrice);
     const n = parseInt(gridCount, 10);
-    if (!lo || !hi || !n || hi <= lo || n < GRID_MIN || n > GRID_MAX) return "--";
-    const step = (hi - lo) / n;
-    const profitLo = (step / hi) * 100;
-    const profitHi = (step / lo) * 100;
-    return `${profitLo.toFixed(2)}% - ${profitHi.toFixed(2)}%`;
-  }, [minPrice, maxPrice, gridCount]);
+    if (!lo || !hi || !n || hi <= lo || n < GRID_MIN || n > GRID_MAX) {
+      setPreviewData(null);
+      return;
+    }
+    const timer = setTimeout(() => {
+      post_profitPreview({
+        symbol: symbolLabel,
+        lower_price: minPrice,
+        upper_price: maxPrice,
+        grid_count: n,
+      })
+        .then(setPreviewData)
+        .catch(() => setPreviewData(null));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [minPrice, maxPrice, gridCount, symbolLabel]);
+
+  const availableUsdt = useMemo(() => {
+    const a = parseFloat(balance?.total_available || "");
+    return Number.isFinite(a) ? a : 0;
+  }, [balance]);
+
+  const minInvestment = useMemo(() => {
+    const m = parseFloat(previewData?.min_investment_usdt || "");
+    return Number.isFinite(m) && m > 0 ? m : 0.56;
+  }, [previewData]);
+
+  const perGridProfit = previewData ? `${previewData.per_grid_profit_pct}%` : "--";
 
   const isValid = useMemo(() => {
     const lo = parseFloat(minPrice);
@@ -82,16 +120,44 @@ const CreateForm: React.FC<Props> = ({ onBack }) => {
     setInvestment(((availableUsdt * pct) / 100).toFixed(2));
   };
 
-  // 智能参数：点击后 AI mock 填入推荐值（实际算法待后端/算法方提供，UI 层先用预设）
-  const handleSmartClick = () => {
+  const handleSmartClick = async () => {
     if (smart) {
       setSmart(false);
       return;
     }
-    setSmart(true);
-    setMinPrice("0.001");
-    setMaxPrice("0.01");
-    setGridCount("10");
+    try {
+      const res = await post_smartParams({
+        symbol: symbolLabel,
+        investment_usdt: investment || undefined,
+      });
+      setSmart(true);
+      setMinPrice(res.lower_price);
+      setMaxPrice(res.upper_price);
+      setGridCount(String(res.grid_count));
+    } catch (e) {
+      console.error("smart-params failed", e);
+    }
+  };
+
+  const handleCreateBot = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      await post_createBot({
+        symbol: symbolLabel,
+        name: `${symbolLabel} ${t("gridBot.spotGrid")}`,
+        lower_price: minPrice,
+        upper_price: maxPrice,
+        grid_count: parseInt(gridCount, 10),
+        investment_usdt: parseFloat(investment).toFixed(2),
+      });
+      setConfirmOpen(false);
+      onBack();
+    } catch (e) {
+      console.error("create bot failed", e);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -105,20 +171,22 @@ const CreateForm: React.FC<Props> = ({ onBack }) => {
         </div>
       )}
 
-      <div className={styles.subHeader}>
-        <span className={styles.subLabel}>{t("gridBot.gridTrading")}</span>
-        <span className={styles.subRight}>
-          <span
-            className={cx(styles.subChange, {
-              [styles.subChangeUp]: change24h.isUp,
-              [styles.subChangeDown]: change24h.isDown,
-            })}
-          >
-            {change24h.text}
+      {isH5 && (
+        <div className={styles.subHeader}>
+          <span className={styles.subLabel}>{t("gridBot.gridTrading")}</span>
+          <span className={styles.subRight}>
+            <span
+              className={cx(styles.subChange, {
+                [styles.subChangeUp]: change24h.isUp,
+                [styles.subChangeDown]: change24h.isDown,
+              })}
+            >
+              {change24h.text}
+            </span>
+            <span className={styles.subValue}>{symbolLabel} ▾</span>
           </span>
-          <span className={styles.subValue}>{symbolLabel} ▾</span>
-        </span>
-      </div>
+        </div>
+      )}
 
       <div className={styles.fieldRow}>
         <span className={styles.fieldLabel}>{t("gridBot.priceRange")}（USDT）</span>
@@ -190,9 +258,7 @@ const CreateForm: React.FC<Props> = ({ onBack }) => {
           currency: "USDT",
         }}
         onCancel={() => setConfirmOpen(false)}
-        onConfirm={() => {
-          setConfirmOpen(false);
-        }}
+        onConfirm={handleCreateBot}
       />
     </div>
   );

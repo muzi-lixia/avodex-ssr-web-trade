@@ -1,4 +1,4 @@
-import React, { HTMLAttributes, useMemo, useState } from "react";
+import React, { HTMLAttributes, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import cx from "classnames";
 import { Hooks, Util } from "@az/base";
@@ -6,10 +6,12 @@ import store from "store";
 import CloseConfirmModal from "./CloseConfirmModal";
 import SlippageDialog from "./SlippageDialog";
 import ImgBotAvatar from "@/assets/img/gridBot/bot-avatar.png";
+import AppDivNoData from "@/components/app/div/noData";
+import { delete_bot, get_bots, type BotListItem } from "@/api/grid";
 import styles from "./index.module.scss";
 
 const { useTranslation } = Hooks;
-const { getUrl } = Util;
+const { getUrl, Big } = Util;
 
 interface BotOrderRow {
   id: string;
@@ -23,41 +25,25 @@ interface BotOrderRow {
   status: "running" | "closed";
 }
 
-const MOCK_ROWS: BotOrderRow[] = [
-  {
-    id: "1",
-    name: "BVT/USDT 網格 (Hold to win)",
-    pair: "BVT/USDT",
-    investment: "10.00",
-    investmentCurrency: "USDT",
-    profit: "+0.09",
-    profitPercent: "+0.89%",
-    profitPositive: true,
-    status: "running",
-  },
-  {
-    id: "2",
-    name: "BVT/USDT 網格 (Hold to win)",
-    pair: "BVT/USDT",
-    investment: "10.00",
-    investmentCurrency: "USDT",
-    profit: "+0.09",
-    profitPercent: "+0.89%",
-    profitPositive: true,
-    status: "running",
-  },
-  {
-    id: "3",
-    name: "BVT/USDT 網格 (Hold to win)",
-    pair: "BVT/USDT",
-    investment: "10.00",
-    investmentCurrency: "USDT",
-    profit: "+0.09",
-    profitPercent: "+0.89%",
-    profitPositive: true,
-    status: "running",
-  },
-];
+const mapBotToRow = (b: BotListItem): BotOrderRow => {
+  const quote = b.symbol.split("/")[1] || "USDT";
+  const init = parseFloat(b.init_investment) || 0;
+  const pnl = parseFloat(b.realized_pnl_usdt) || 0;
+  const positive = pnl >= 0;
+  const sign = pnl > 0 ? "+" : pnl < 0 ? "-" : "";
+  const pct = init > 0 ? (Math.abs(pnl) / init) * 100 : 0;
+  return {
+    id: b.bot_id,
+    name: b.name,
+    pair: b.symbol,
+    investment: Big(b.total_investment || b.init_investment || "0").toFixed(2),
+    investmentCurrency: quote,
+    profit: `${sign}${Math.abs(pnl).toFixed(4)}`,
+    profitPercent: `${sign}${pct.toFixed(2)}%`,
+    profitPositive: positive,
+    status: b.status === "closed" ? "closed" : "running",
+  };
+};
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   clsUl?: string;
@@ -73,21 +59,52 @@ const goToBotDetail = (_botId: string) => {
 const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
   const t = useTranslation();
   const { isH5 } = store.app;
+  const { isLogin } = store.user;
 
+  const [rows, setRows] = useState<BotOrderRow[]>([]);
   const [closeTarget, setCloseTarget] = useState<BotOrderRow | null>(null);
+  const [slippageBps, setSlippageBps] = useState<number | undefined>(undefined);
   const [slippageOpen, setSlippageOpen] = useState(false);
+
+  const reload = () => {
+    if (!isLogin) {
+      setRows([]);
+      return;
+    }
+    get_bots({ status: "initializing,running,paused", limit: 50 })
+      .then((res) => setRows((res?.list || []).map(mapBotToRow)))
+      .catch(() => setRows([]));
+  };
+
+  useEffect(() => {
+    reload();
+  }, [isLogin]);
+
   const handleClose = (row: BotOrderRow) => setCloseTarget(row);
   const handleCloseCancel = () => {
     setCloseTarget(null);
     setSlippageOpen(false);
   };
-  const handleCloseConfirm = (_mode: "auto" | "manual") => {
-    setCloseTarget(null);
-    setSlippageOpen(false);
+  const handleCloseConfirm = async (mode: "auto" | "manual") => {
+    if (!closeTarget) return;
+    try {
+      await delete_bot(closeTarget.id, {
+        settlement_mode: mode === "auto" ? "auto_sell" : "keep_base",
+        slippage_bps: mode === "auto" ? slippageBps : undefined,
+      });
+      reload();
+    } catch (e) {
+      console.error("close bot failed", e);
+    } finally {
+      setCloseTarget(null);
+      setSlippageOpen(false);
+    }
   };
   const handleOpenSlippage = () => setSlippageOpen(true);
   const handleSlippageCancel = () => setSlippageOpen(false);
-  const handleSlippageSave = (_slippage: string, _enabled: boolean) => {
+  const handleSlippageSave = (slippage: string, _enabled: boolean) => {
+    const bps = Math.round(parseFloat(slippage) * 100);
+    setSlippageBps(Number.isFinite(bps) && bps >= 0 ? bps : undefined);
     setSlippageOpen(false);
   };
 
@@ -107,7 +124,8 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
   if (isH5) {
     return (
       <div className={cx(styles.mobileMain, className)}>
-        {MOCK_ROWS.map((row) => (
+        {!rows.length && <AppDivNoData />}
+        {rows.map((row) => (
           <div key={row.id} className={styles.mobileCard}>
             <div className={styles.mobileCardHeader}>
               <span className={styles.mobileCardName}>{row.name}</span>
@@ -168,7 +186,8 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
 
       <div className={cx(clsUl, styles.ul)}>
         <div className={styles.ulCon}>
-          {MOCK_ROWS.map((row) => (
+          {!rows.length && <AppDivNoData className={styles.noData} />}
+          {rows.map((row) => (
             <div key={row.id} className={cx(clsLi, styles.li)}>
               <div className={styles.nameCol}>
                 <span className={styles.botAvatar}>

@@ -7,6 +7,8 @@ const { getUrl } = Util;
 import store from "store";
 
 import { Drawer } from "antd";
+import SvgIcon from "@az/SvgIcon";
+import SvgBot from "@/assets/icon-svg/gridBot/bot.svg";
 import AzSvg from "components/az/svg";
 // import AzTabs from "components/az/tabs";
 import EtfBtns from "components/pages/trade/_cmpt/form/etfBtns";
@@ -86,9 +88,7 @@ const Main: React.FC<Props> = ({ hasFutures, hasEtf, tradeType, setTradeType }) 
         </button>
         {!isNft && (
           <button className={cx("btnTxt", styles.triggerBtnAi)} onClick={() => setAiOpen(true)}>
-            <span className={styles.aiIcon} aria-hidden>
-              🤖
-            </span>
+            <SvgIcon className={styles.aiIcon} src={SvgBot} />
             <span className={styles.aiLabel}>{t("trade.aiTrading")}</span>
           </button>
         )}
