@@ -442,8 +442,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 35px;
-  margin-top: 21px;
+  padding: 12px 0;
+  margin-top: 9px;
+  border-bottom: 1px solid var(--az-colorv2-border-default);
 }
 
 .slippageToggleLabel {

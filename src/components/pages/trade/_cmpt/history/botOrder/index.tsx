@@ -61,9 +61,22 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
   const { isH5 } = store.app;
   const { isLogin } = store.user;
 
-  const [rows, setRows] = useState<BotOrderRow[]>([]);
+  const [rows, setRows] = useState<BotOrderRow[]>([
+    {
+      id: "mock-bot-1",
+      name: "BTC/USDT 現貨網格",
+      pair: "BTC/USDT",
+      investment: "100.00",
+      investmentCurrency: "USDT",
+      profit: "+1.2345",
+      profitPercent: "+1.23%",
+      profitPositive: true,
+      status: "running",
+    },
+  ]);
   const [closeTarget, setCloseTarget] = useState<BotOrderRow | null>(null);
   const [slippageBps, setSlippageBps] = useState<number | undefined>(undefined);
+  const [slippageDisplay, setSlippageDisplay] = useState<string>("0.0001");
   const [slippageOpen, setSlippageOpen] = useState(false);
 
   const reload = () => {
@@ -77,7 +90,7 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
   };
 
   useEffect(() => {
-    reload();
+    // reload();
   }, [isLogin]);
 
   const handleClose = (row: BotOrderRow) => setCloseTarget(row);
@@ -105,6 +118,7 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
   const handleSlippageSave = (slippage: string, _enabled: boolean) => {
     const bps = Math.round(parseFloat(slippage) * 100);
     setSlippageBps(Number.isFinite(bps) && bps >= 0 ? bps : undefined);
+    setSlippageDisplay(slippage);
     setSlippageOpen(false);
   };
 
@@ -165,6 +179,7 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
             onCancel={handleCloseCancel}
             onConfirm={handleCloseConfirm}
             onOpenSlippage={handleOpenSlippage}
+            slippage={slippageDisplay}
           />
         )}
         {slippageOpen && <SlippageDialog open latestPrice={latestPrice} onCancel={handleSlippageCancel} onSave={handleSlippageSave} />}
@@ -223,6 +238,7 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
           onCancel={handleCloseCancel}
           onConfirm={handleCloseConfirm}
           onOpenSlippage={handleOpenSlippage}
+          slippage={slippageDisplay}
         />
       )}
       {slippageOpen && <SlippageDialog open latestPrice={latestPrice} onCancel={handleSlippageCancel} onSave={handleSlippageSave} />}

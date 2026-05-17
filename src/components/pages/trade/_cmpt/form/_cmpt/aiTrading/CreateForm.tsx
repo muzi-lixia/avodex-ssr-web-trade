@@ -6,14 +6,7 @@ import SvgIcon from "@az/SvgIcon";
 import store from "store";
 import ConfirmModal from "./ConfirmModal";
 import SvgSmartParam from "@/assets/icon-svg/gridBot/smart-param.svg";
-import {
-  get_balance,
-  post_createBot,
-  post_profitPreview,
-  post_smartParams,
-  type BalanceRes,
-  type ProfitPreviewRes,
-} from "@/api/grid";
+import { get_balance, post_createBot, post_profitPreview, post_smartParams, type BalanceRes, type ProfitPreviewRes } from "@/api/grid";
 import styles from "./index.module.scss";
 
 const { useTranslation } = Hooks;
@@ -31,7 +24,8 @@ const CreateForm: React.FC<Props> = ({ onBack }) => {
   const { name } = store.market;
   const { tickers } = store.trade;
   const { isLogin } = store.user;
-  const symbolLabel = (name || "btc_usdt").replace("_", "/").toUpperCase();
+  const symbolTicker = name || "btc_usdt";
+  const symbolLabel = symbolTicker.replace("_", "/").toUpperCase();
 
   const change24h = useMemo(() => {
     const ticker = tickers.find((obj) => obj.s === name);
@@ -78,7 +72,7 @@ const CreateForm: React.FC<Props> = ({ onBack }) => {
     }
     const timer = setTimeout(() => {
       post_profitPreview({
-        symbol: symbolLabel,
+        symbol: symbolTicker,
         lower_price: minPrice,
         upper_price: maxPrice,
         grid_count: n,
@@ -87,7 +81,7 @@ const CreateForm: React.FC<Props> = ({ onBack }) => {
         .catch(() => setPreviewData(null));
     }, 300);
     return () => clearTimeout(timer);
-  }, [minPrice, maxPrice, gridCount, symbolLabel]);
+  }, [minPrice, maxPrice, gridCount, symbolTicker]);
 
   const availableUsdt = useMemo(() => {
     const a = parseFloat(balance?.total_available || "");
@@ -127,8 +121,8 @@ const CreateForm: React.FC<Props> = ({ onBack }) => {
     }
     try {
       const res = await post_smartParams({
-        symbol: symbolLabel,
-        investment_usdt: investment || undefined,
+        symbol: symbolTicker,
+        investment_usdt: investment,
       });
       setSmart(true);
       setMinPrice(res.lower_price);
@@ -144,7 +138,7 @@ const CreateForm: React.FC<Props> = ({ onBack }) => {
     setSubmitting(true);
     try {
       await post_createBot({
-        symbol: symbolLabel,
+        symbol: symbolTicker,
         name: `${symbolLabel} ${t("gridBot.spotGrid")}`,
         lower_price: minPrice,
         upper_price: maxPrice,

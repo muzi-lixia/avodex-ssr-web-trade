@@ -1,1 +1,1 @@
-["sapi", "fapi", "dapi", "uaapi", "rfapi", "uaapi", "exapi", "exapi/user", "exapi/app", "exapi/lever", "exapi/redemption", "exapi/message"]
+["sapi", "fapi", "dapi", "uaapi", "rfapi", "uaapi", "exapi", "exapi/user", "exapi/app", "exapi/lever", "exapi/redemption", "exapi/message", "service", "grid"]

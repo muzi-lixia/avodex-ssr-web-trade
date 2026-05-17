@@ -12,12 +12,15 @@ interface Props {
   pair: string;
   baseCurrency: string;
   quoteCurrency: string;
+  slippage: string;
   onCancel: () => void;
   onConfirm: (mode: SellMode) => void;
   onOpenSlippage?: () => void;
 }
 
-const CloseConfirmModal: React.FC<Props> = ({ open, pair, baseCurrency, quoteCurrency, onCancel, onConfirm, onOpenSlippage }) => {
+const AI_RECOMMEND = "0.0001";
+
+const CloseConfirmModal: React.FC<Props> = ({ open, pair, baseCurrency, quoteCurrency, slippage, onCancel, onConfirm, onOpenSlippage }) => {
   const t = useTranslation();
   const [mode, setMode] = useState<SellMode>("auto");
 
@@ -46,7 +49,8 @@ const CloseConfirmModal: React.FC<Props> = ({ open, pair, baseCurrency, quoteCur
                 onOpenSlippage && onOpenSlippage();
               }}
             >
-              {t("gridBot.closeAutoSellSub")} ›
+              {t("gridBot.closeAutoSellSub", { slippage })}
+              {slippage === AI_RECOMMEND ? ` ${t("gridBot.closeAutoSellAiSuffix")}` : ""} ›
             </button>
           </div>
         </div>
