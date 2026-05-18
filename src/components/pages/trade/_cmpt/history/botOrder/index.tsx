@@ -2,10 +2,11 @@ import React, { HTMLAttributes, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import cx from "classnames";
 import { Hooks, Util } from "@az/base";
+import SvgIcon from "@az/SvgIcon";
 import store from "store";
 import CloseConfirmModal from "./CloseConfirmModal";
 import SlippageDialog from "./SlippageDialog";
-import ImgBotAvatar from "@/assets/img/gridBot/bot-avatar.png";
+import SvgBotGrid from "@/assets/icon-svg/gridBot/bot-grid.svg";
 import AppDivNoData from "@/components/app/div/noData";
 import { delete_bot, get_bots, type BotListItem } from "@/api/grid";
 import styles from "./index.module.scss";
@@ -61,19 +62,7 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
   const { isH5 } = store.app;
   const { isLogin } = store.user;
 
-  const [rows, setRows] = useState<BotOrderRow[]>([
-    {
-      id: "mock-bot-1",
-      name: "BTC/USDT 現貨網格",
-      pair: "BTC/USDT",
-      investment: "100.00",
-      investmentCurrency: "USDT",
-      profit: "+1.2345",
-      profitPercent: "+1.23%",
-      profitPositive: true,
-      status: "running",
-    },
-  ]);
+  const [rows, setRows] = useState<BotOrderRow[]>([]);
   const [closeTarget, setCloseTarget] = useState<BotOrderRow | null>(null);
   const [slippageBps, setSlippageBps] = useState<number | undefined>(undefined);
   const [slippageDisplay, setSlippageDisplay] = useState<string>("0.0001");
@@ -90,8 +79,8 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
   };
 
   useEffect(() => {
-    // reload();
-  }, [isLogin]);
+    reload();
+  }, [isLogin]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleClose = (row: BotOrderRow) => setCloseTarget(row);
   const handleCloseCancel = () => {
@@ -205,9 +194,7 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
           {rows.map((row) => (
             <div key={row.id} className={cx(clsLi, styles.li)}>
               <div className={styles.nameCol}>
-                <span className={styles.botAvatar}>
-                  <img className={styles.botAvatarImg} src={ImgBotAvatar} alt="" />
-                </span>
+                <SvgIcon className={styles.botAvatarIcon} src={SvgBotGrid} />
                 <span className={styles.botName}>{row.name}</span>
               </div>
               <div>{row.pair}</div>
