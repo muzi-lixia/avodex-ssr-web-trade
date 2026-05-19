@@ -35,6 +35,7 @@ const IconDiv: React.FC = () => {
 
 const Main: React.FC<Props> = ({ className, atvLay, onLayChange, depthMerge, setDepthMerge, ...rest }) => {
   const { name, currentConfig, isNft } = store.market;
+  const { isH5 } = store.app;
 
   const depthMergePrecisionAry = useMemo(() => {
     const { depthMergePrecision, pricePrecision } = currentConfig;
@@ -85,25 +86,52 @@ const Main: React.FC<Props> = ({ className, atvLay, onLayChange, depthMerge, set
     });
   }, [depthMergePrecisionAry, handleClickDepthMerge, store.app.isNumberIndent]);
 
+  const handleCycleLay = useCallback(() => {
+    const order = [LayEnum.ask2bid, LayEnum.ask, LayEnum.bid];
+    const idx = order.indexOf(atvLay as LayEnum);
+    const next = order[(idx + 1) % order.length];
+    onLayChange(next);
+  }, [atvLay, onLayChange]);
+
+  const h5IconCls = useMemo(() => {
+    if (atvLay === LayEnum.ask2bid) return styles.icon_ask2bid;
+    if (atvLay === LayEnum.ask) return styles.icon_bid;
+    return styles.icon_ask;
+  }, [atvLay]);
+
   return (
-    <div className={cx(styles.main, className)} {...rest}>
-      <div className={cx(styles.icons)}>
-        <button onClick={() => onLayChange(LayEnum.ask2bid)} className={cx("btnTxt", styles.icon_ask2bid, { [styles.iconAtv]: atvLay === LayEnum.ask2bid })}>
-          <div>
+    <div className={cx(styles.main, isH5 && styles.main_h5, className)} {...rest}>
+      {!isH5 ? (
+        <div className={cx(styles.icons)}>
+          <button onClick={() => onLayChange(LayEnum.ask2bid)} className={cx("btnTxt", styles.icon_ask2bid, { [styles.iconAtv]: atvLay === LayEnum.ask2bid })}>
+            <div>
+              <div></div>
+              <div></div>
+            </div>
+            <IconDiv />
+          </button>
+          <button onClick={() => onLayChange(LayEnum.ask)} className={cx("btnTxt", styles.icon_bid, { [styles.iconAtv]: atvLay === LayEnum.ask })}>
             <div></div>
+            <IconDiv />
+          </button>
+          <button onClick={() => onLayChange(LayEnum.bid)} className={cx("btnTxt", styles.icon_ask, { [styles.iconAtv]: atvLay === LayEnum.bid })}>
             <div></div>
-          </div>
+            <IconDiv />
+          </button>
+        </div>
+      ) : (
+        <button onClick={handleCycleLay} className={cx("btnTxt", styles.iconAtv, h5IconCls)}>
+          {atvLay === LayEnum.ask2bid ? (
+            <div>
+              <div></div>
+              <div></div>
+            </div>
+          ) : (
+            <div></div>
+          )}
           <IconDiv />
         </button>
-        <button onClick={() => onLayChange(LayEnum.ask)} className={cx("btnTxt", styles.icon_bid, { [styles.iconAtv]: atvLay === LayEnum.ask })}>
-          <div></div>
-          <IconDiv />
-        </button>
-        <button onClick={() => onLayChange(LayEnum.bid)} className={cx("btnTxt", styles.icon_ask, { [styles.iconAtv]: atvLay === LayEnum.bid })}>
-          <div></div>
-          <IconDiv />
-        </button>
-      </div>
+      )}
       <div>
         {isNft ? (
           <></>
@@ -111,7 +139,8 @@ const Main: React.FC<Props> = ({ className, atvLay, onLayChange, depthMerge, set
           <>
             {!!depthMergePrecisionAry && (
               <Dropdown
-                placement={"bottomRight"}
+                placement={isH5 ? "topLeft" : "bottomRight"}
+                trigger={isH5 ? ["click"] : ["hover"]}
                 // getPopupContainer={(triggerNode: HTMLElement) => triggerNode}
                 menu={{
                   items: dropdownItems,
@@ -119,7 +148,7 @@ const Main: React.FC<Props> = ({ className, atvLay, onLayChange, depthMerge, set
                   selectedKeys: depthMerge ? [depthMerge] : [],
                 }}
               >
-                <button className={cx("btnTxt btnHover btnDrop", styles.trigger)} onClick={(e) => e.preventDefault()}>
+                <button className={cx("btnTxt btnHover btnDrop", styles.trigger, isH5 && styles.trigger_h5)} onClick={(e) => e.preventDefault()}>
                   {indentFormat(depthMerge)}
                 </button>
               </Dropdown>

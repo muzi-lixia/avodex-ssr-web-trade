@@ -275,7 +275,7 @@ const Main: React.FC<Props> = ({ option, action, updateTv }) => {
     const { interval } = getOptionTradingView(option);
     const tvConstructor = new widget({
       ...tvCfg,
-      disabled_features: tvCfg.disabled_features.concat(isH5 ? ["widget_logo"] : []),
+      disabled_features: tvCfg.disabled_features.concat(isH5 ? ["widget_logo", "timeframes_toolbar"] : []),
       container: "TradingView",
       symbol: name,
       locale: (() => {
@@ -414,6 +414,16 @@ const Main: React.FC<Props> = ({ option, action, updateTv }) => {
           });
         }, 0);
       })();
+    }
+
+    // H5下隐藏Volume指标
+    if (isH5) {
+      const studies = tvWidget.activeChart().getAllStudies();
+      studies.forEach((study) => {
+        if (study.name === "Volume") {
+          tvWidget.activeChart().removeEntity(study.id);
+        }
+      });
     }
 
     const { interval, chartType } = getOptionTradingView(option);

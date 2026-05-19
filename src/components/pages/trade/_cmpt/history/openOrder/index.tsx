@@ -296,10 +296,15 @@ const Main: React.FC<Props> = ({ className, isHideOtherPairs, setHideOtherPairs,
                         <div>{doc._total}</div>
 
                         <div>
-                          <button disabled={loading} className={"btnTxt"} onClick={() => handleClickEdit(doc)} style={{ marginInlineEnd: "15px" }}>
+                          <button
+                            disabled={loading}
+                            className={cx("btnTxt", styles.actionBtn)}
+                            onClick={() => handleClickEdit(doc)}
+                            style={{ marginInlineEnd: "15px" }}
+                          >
                             <AzSvg icon="edit2" />
                           </button>
-                          <button disabled={loading} className={"btnTxt"} onClick={() => handleCancelOne(doc.orderId)}>
+                          <button disabled={loading} className={cx("btnTxt", styles.actionBtn)} onClick={() => handleCancelOne(doc.orderId)}>
                             <AzSvg icon="delete" />
                           </button>
                         </div>

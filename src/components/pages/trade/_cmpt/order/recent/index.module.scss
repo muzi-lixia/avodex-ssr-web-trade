@@ -6,9 +6,27 @@
   align-items: center;
   padding: 0 12px;
   &.main_h5 {
+    height: auto;
+    padding: 6px 12px;
+
     .leftCon {
       flex: none;
-      width: auto;
+      width: 100%;
+      flex-wrap: wrap;
+      white-space: normal;
+      justify-content: center;
+
+      b {
+        font-size: 14px;
+      }
+
+      small {
+        display: block;
+        width: 100%;
+        font-size: 12px;
+        margin-inline-start: 0;
+        text-align: center;
+      }
     }
   }
 }
