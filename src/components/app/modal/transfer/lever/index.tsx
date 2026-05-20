@@ -33,22 +33,11 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   coin: string;
   setCoin: (arg: string) => void;
   hasFuturesU: boolean;
-  hasFuturesC: boolean;
   leverSymbolList: LeverSymbolListProps[];
   leverCurrencyList: LeverCurrencyListProps[];
 }
 
-const Main: React.FC<Props> = ({
-  className,
-  leverMarketName,
-  setLeverMarketName,
-  coin,
-  setCoin,
-  hasFuturesU,
-  hasFuturesC,
-  leverSymbolList,
-  leverCurrencyList,
-}) => {
+const Main: React.FC<Props> = ({ className, leverMarketName, setLeverMarketName, coin, setCoin, hasFuturesU, leverSymbolList, leverCurrencyList }) => {
   const t = useTranslation();
   const { formatName } = store.market;
   const { getCurrencyDisplayName } = store.currency;
@@ -96,7 +85,7 @@ const Main: React.FC<Props> = ({
         {leverCurrencyList.map((doc, index) => {
           return (
             <button
-              disabled={!!((hasFuturesU && !index) || (hasFuturesC && index))}
+              disabled={!!(hasFuturesU && !index)}
               key={doc.key}
               onClick={() => setCoin(doc.key)}
               className={cx("btnTxt", { [styles.btnAtv]: coin === doc.key })}

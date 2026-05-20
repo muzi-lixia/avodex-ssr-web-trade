@@ -6,7 +6,7 @@ import { get_symbol, get_plate, get_symbolFeeRate, get_leverSymbol, get_etf_list
 import { get_marketTips, get_searchMarketHot } from "api/old/app";
 import { post_getEtfByTradeMarket } from "api/old/redemption";
 import { get_fapiSymbolList } from "api/old/futures";
-import { get_fapiAccountOpen, get_dapiAccountOpen, get_fapiCoins, get_dapiCoins } from "api/v4/futures";
+import { get_fapiAccountOpen, get_fapiCoins } from "api/v4/futures";
 
 export interface SymbolFilterProps {
   filter: "PRICE" | "QUANTITY";
@@ -18,6 +18,7 @@ export interface SymbolFilterProps {
 export interface SymbolProps extends ObjAny {
   id: number; //市场id
   symbol: string; //市场名称
+  isBlack: boolean; //是否黑名单交易对
   quantityPrecision: number; //卖方币市场精度
   pricePrecision: number; //买方币市场精度
   plates: number[]; //板块列表id
@@ -31,6 +32,7 @@ export interface SymbolProps extends ObjAny {
   type: string; //类型 nft | normal
   filters?: SymbolFilterProps[]; //过滤器
 }
+type DisplayLevel = "FULL" | "SEARCH" | "DIRECT" | "NONE";
 
 export interface LeverSymbolProps extends ObjAny {
   // marketName: string; //市场名称
@@ -118,9 +120,7 @@ interface StateProps {
   netWorth: string;
   etfDealPairListData: IEtfDealPairItemProps[];
   isFuturesUsdtOpen: WithUndefined<boolean>;
-  isFuturesCoinOpen: WithUndefined<boolean>;
   futuresUsdtTransferList: WithUndefined<string[]>;
-  futuresCoinTransferList: WithUndefined<string[]>;
   futuresUsdtConfigAry: WithUndefined<FuturesSymbolProps[]>;
   feeRate: ObjT<FeeRateProps>;
   etfList?: EtfProps[]; //etf交易对列表
@@ -144,9 +144,7 @@ const market = makeAutoObservable(
     netWorth: "" as StateProps["netWorth"], //etf当前市场，通证净值
     etfDealPairListData: [] as StateProps["etfDealPairListData"], //etf交易对数据
     isFuturesUsdtOpen: undefined as StateProps["isFuturesUsdtOpen"], //判断U本位合约是否开通
-    isFuturesCoinOpen: undefined as StateProps["isFuturesCoinOpen"], //判断币本位合约是否开通
     futuresUsdtTransferList: undefined as StateProps["futuresUsdtTransferList"], //U本位合约可划转币种列表
-    futuresCoinTransferList: undefined as StateProps["futuresCoinTransferList"], //币本位合约可划转币种列表
     futuresUsdtConfigAry: undefined as StateProps["futuresUsdtConfigAry"], //U本位合约所有市场配置信息，数组
     feeRate: {} as StateProps["feeRate"], //缓存所有市场的费率
     etfList: undefined as StateProps["etfList"], //etf交易对列表，数组
@@ -380,6 +378,16 @@ const market = makeAutoObservable(
       });
       return marketEtfConfig.includes(symbol);
     }, //判断是否是etf市场(新)
+    isMarketVisibleByDisplayLevel(displayLevel?: string, { allowSearch = true }: { allowSearch?: boolean } = {}): boolean {
+      if (!displayLevel) return false;
+      const level = displayLevel as DisplayLevel;
+      if (allowSearch) return level === "FULL" || level === "SEARCH";
+      return level === "FULL";
+    }, //判断展示级别是否可见
+    isMarketVisible(symbolCfg?: ObjAny | SymbolProps, { allowSearch = true }: { allowSearch?: boolean } = {}): boolean {
+      if (!symbolCfg || symbolCfg.state === "DELISTED") return false;
+      return this.isMarketVisibleByDisplayLevel(symbolCfg.displayLevel, { allowSearch });
+    }, //判断市场是否可见（统一过滤 NONE/DELISTED）
     isMarketOpenFn(symbolCfg: ObjAny | SymbolProps, { server, local }): boolean {
       const { state, nextState, nextStateTime } = symbolCfg;
       if (state === "ONLINE") return true;
@@ -397,14 +405,6 @@ const market = makeAutoObservable(
         })
         .finally(finallyFun);
     }, //判断U本位合约是否开通
-    getDapiAccountOpen(finallyFun?: () => void) {
-      if (this.isFuturesCoinOpen) return finallyFun && finallyFun();
-      get_dapiAccountOpen()
-        .then((result) => {
-          this.isFuturesCoinOpen = result;
-        })
-        .finally(finallyFun);
-    }, //判断币本位合约是否开通
     getFapiCoins(finallyFun?: () => void) {
       get_fapiCoins()
         .then((result) => {
@@ -412,13 +412,6 @@ const market = makeAutoObservable(
         })
         .finally(finallyFun);
     }, //U本位合约可划转币种列表
-    getDapiCoins(finallyFun?: () => void) {
-      get_dapiCoins()
-        .then((result) => {
-          this.futuresCoinTransferList = result;
-        })
-        .finally(finallyFun);
-    }, //币本位合约可划转币种列表
     getSymbolFeeRate(name?) {
       const symbol = name || this.name;
       if (this.feeRate[symbol]) return;

@@ -77,3 +77,31 @@
     color: var(--az-colorv2-text-primary) !important;
   }
 }
+
+.main_h5 {
+  flex-direction: row-reverse;
+  align-items: center;
+  padding: 8px 12px;
+}
+
+.trigger_h5 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--az-colorv2-border-disabled);
+  background-color: var(--az-colorv2-bg-base);
+  min-width: 80px;
+  justify-content: space-between;
+
+  &::after {
+    content: "";
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid var(--az-colorv2-text-tertiary);
+  }
+}

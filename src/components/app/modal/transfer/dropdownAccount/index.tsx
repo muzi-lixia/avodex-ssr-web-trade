@@ -20,14 +20,13 @@ interface Props extends DropdownProps {
 const Main: React.FC<Props> = ({ value, skip, onChange, ...rest }) => {
   const t = useTranslation();
   const { isSubAcc } = store.user;
-  const { isFuturesUsdtOpen, isFuturesCoinOpen } = store.market;
+  const { isFuturesUsdtOpen } = store.market;
 
   const accList = useMemo(() => {
     return [
       { key: AccountEnum.spot, label: t("trade.accSpot") },
       { key: AccountEnum.lever, label: t("trade.accMargin") },
       { key: AccountEnum.futures_u, label: t("trade.accFutureU") },
-      { key: AccountEnum.futures_c, label: t("trade.accFutureC") },
       // { key: AccountEnum.finance, label: t("trade.accFinance") },
     ];
   }, []);
@@ -43,7 +42,7 @@ const Main: React.FC<Props> = ({ value, skip, onChange, ...rest }) => {
       if (skip && skip.includes(key)) return false;
       if (key === AccountEnum.finance && isSubAcc) return false;
       let suffix = "";
-      if ((key === AccountEnum.futures_u && !isFuturesUsdtOpen) || (key === AccountEnum.futures_c && !isFuturesCoinOpen)) suffix = t("trade.notOpen");
+      if (key === AccountEnum.futures_u && !isFuturesUsdtOpen) suffix = t("trade.notOpen");
 
       retAry.push({
         key,
@@ -57,7 +56,7 @@ const Main: React.FC<Props> = ({ value, skip, onChange, ...rest }) => {
     });
 
     return retAry;
-  }, [accList, isSubAcc, skip, isFuturesUsdtOpen, isFuturesCoinOpen]);
+  }, [accList, isSubAcc, skip, isFuturesUsdtOpen]);
 
   return (
     <Dropdown
