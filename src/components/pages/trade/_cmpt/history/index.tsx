@@ -24,6 +24,9 @@ import CMPT_botOrder from "./botOrder";
 // import CMPT_subscription from "./subscription";
 // import CMPT_redemption from "./redemption";
 
+import SvgIcon from "@az/SvgIcon";
+import SvgBadgeNew from "@/assets/icon-svg/gridBot/badge-new.svg";
+
 import styles from "./index.module.scss";
 
 enum HistoryTypeEnum {
@@ -87,7 +90,12 @@ const Main: React.FC<Props> = ({ className }) => {
     if (!isNft) {
       ary.unshift({
         key: HistoryTypeEnum.botOrder,
-        label: t("gridBot.botOrders"),
+        label: (
+          <span className={styles.botOrderTabLabel}>
+            {t("trade.aiTrading")}
+            <SvgIcon className={styles.botOrderTabBadge} src={SvgBadgeNew} />
+          </span>
+        ) as any,
       });
     }
 

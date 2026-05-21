@@ -125,20 +125,32 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
   }, [closeTarget, store.trade.tickers]);
 
   if (isH5) {
+    const handleOpenCreate = () => store.trade.updateState({ aiDrawerOpen: true });
     return (
       <div className={cx(styles.mobileMain, className)}>
-        {!rows.length && <AppDivNoData />}
+        {rows.length > 0 && (
+          <div className={styles.mobileToolbar}>
+            <span className={styles.mobileToolbarTitle}>{t("gridBot.myOrders")}</span>
+            <button className={styles.mobileToolbarCreateBtn} onClick={handleOpenCreate}>
+              {t("gridBot.createNewBot")}
+            </button>
+          </div>
+        )}
+        {!rows.length && (
+          <div className={styles.mobileEmpty}>
+            <button className={styles.mobileEmptyCreateBtn} onClick={handleOpenCreate}>
+              {t("gridBot.createAiTrading")}
+            </button>
+            <AppDivNoData />
+          </div>
+        )}
         {rows.map((row) => (
           <div key={row.id} className={styles.mobileCard}>
-            <div className={styles.mobileCardHeader}>
-              <span className={styles.mobileCardName}>{row.name}</span>
-              <div className={styles.mobileCardActions}>
-                <button className={styles.mobileActionDetail} onClick={() => goToBotDetail(row.id)}>
-                  {t("gridBot.detail")}
-                </button>
-                <button className={styles.mobileActionClose} onClick={() => handleClose(row)}>
-                  {t("gridBot.close")}
-                </button>
+            <div className={styles.mobileCardRow}>
+              <span className={styles.mobileLabel}>{t("gridBot.colBotName")}</span>
+              <div className={styles.mobileCardNameWrap}>
+                <SvgIcon className={styles.mobileCardNameIcon} src={SvgBotGrid} />
+                <span className={styles.mobileCardName}>{row.name}</span>
               </div>
             </div>
             <div className={styles.mobileCardRow}>
@@ -156,6 +168,14 @@ const Main: React.FC<Props> = ({ className, clsUl, clsLi }) => {
               <span className={row.profitPositive ? styles.mobileValueBuy : styles.mobileValueSell}>
                 {row.profit}({row.profitPercent})
               </span>
+            </div>
+            <div className={styles.mobileCardBottomActions}>
+              <button className={styles.mobileBottomBtnDetail} onClick={() => goToBotDetail(row.id)}>
+                {t("gridBot.detail")}
+              </button>
+              <button className={styles.mobileBottomBtnClose} onClick={() => handleClose(row)}>
+                {t("gridBot.close")}
+              </button>
             </div>
           </div>
         ))}

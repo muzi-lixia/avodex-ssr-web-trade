@@ -126,6 +126,7 @@ interface StateProps {
   //
   searchHistory: SearchHistoryItemProps[];
   isDepthShowTotalPrice: boolean;
+  aiDrawerOpen: boolean;
 }
 
 let loading_getTicker24h = false;
@@ -157,6 +158,7 @@ const trade = makeAutoObservable(
     //搜索历史
     searchHistory: [] as StateProps["searchHistory"], //搜索历史
     isDepthShowTotalPrice: false as StateProps["isDepthShowTotalPrice"], //盘口深度是否显示累计价格
+    aiDrawerOpen: false as StateProps["aiDrawerOpen"], //H5 AI智能交易创建抽屉是否打开
 
     updateState(payload: Partial<StateProps>) {
       for (const va in payload) {

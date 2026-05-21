@@ -121,3 +121,17 @@
     }
   }
 }
+
+.botOrderTabLabel {
+  position: relative;
+  display: inline-block;
+}
+
+.botOrderTabBadge {
+  position: absolute;
+  top: 4px;
+  right: -12px;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+}
