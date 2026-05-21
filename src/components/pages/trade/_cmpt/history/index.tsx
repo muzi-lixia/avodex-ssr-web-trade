@@ -85,7 +85,7 @@ const Main: React.FC<Props> = ({ className }) => {
     });
 
     if (!isNft) {
-      ary.push({
+      ary.unshift({
         key: HistoryTypeEnum.botOrder,
         label: t("gridBot.botOrders"),
       });
