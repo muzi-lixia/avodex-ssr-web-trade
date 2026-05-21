@@ -39,17 +39,6 @@
     margin-top: 10px;
   }
 
-  [data-theme="dark"][data-breakpoint="sm"] & {
-    .input {
-      &:not([aria-disabled="true"]) {
-        // background-color: #242427;
-        background-color: var(--az-colorv2-input-bg);
-        border-radius: 4px;
-        border: 1px solid var(--az-colorv2-border-default);
-      }
-    }
-  }
-
   .slider {
     [data-theme="dark"][data-breakpoint="sm"] & {
       :global {
