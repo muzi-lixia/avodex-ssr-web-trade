@@ -1,0 +1,6 @@
+# .gitlab-ci.yml
+include:
+  - project: "devops/global-ci"
+    file: "/ai-audit.yml"
+ai-security-audit:
+  extends: .ai_security_audit_template

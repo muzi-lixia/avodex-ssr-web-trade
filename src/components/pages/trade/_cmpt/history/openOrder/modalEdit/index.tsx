@@ -8,7 +8,7 @@ import store from "store";
 import { get_balances, get_leverBalance } from "api/v4/balance";
 import { put_order } from "api/v4/order";
 
-import { Modal, ModalProps } from "antd";
+import { Drawer, Modal, ModalProps } from "antd";
 import AppInputNumber from "components/app/input/number";
 // import AzSvg from "components/az/svg";
 import AzLoading from "@/components/az/loading";
@@ -38,6 +38,7 @@ const Main: React.FC<Props> = ({ doc, successCallback, open, onCancel, ...rest }
   const t = useTranslation();
   // const {isLogin} = store.user;
   const { name, config, isLever } = store.market;
+  const { isH5 } = store.app;
   const { tickers } = store.trade;
   const { getCurrencyDisplayName } = store.currency;
 
@@ -241,19 +242,8 @@ const Main: React.FC<Props> = ({ doc, successCallback, open, onCancel, ...rest }
     setAvailable(balancesAvailable);
   }, [open, balancesAvailable]);
 
-  return (
-    <Modal
-      open={open}
-      title={t("trade.orderModify")}
-      width={440}
-      centered
-      className={styles.main}
-      closeIcon={<SvgIcon className={"svgIcon"} src={SvgClose} />}
-      onCancel={(e) => !loading && onCancel && onCancel(e)}
-      okButtonProps={{ disabled: isConfirmDisabled }}
-      onOk={handleConfirm}
-      {...rest}
-    >
+  const content = (
+    <>
       <div className={styles.orderInfo}>
         <div>
           <div>
@@ -307,6 +297,54 @@ const Main: React.FC<Props> = ({ doc, successCallback, open, onCancel, ...rest }
       </div>
 
       {loading && <AzLoading />}
+    </>
+  );
+
+  if (isH5) {
+    return (
+      <Drawer
+        open={open}
+        title={t("trade.orderModify")}
+        placement="bottom"
+        height="auto"
+        closable={false}
+        className={styles.drawer}
+        extra={
+          <button className={cx("btnTxt", "btnHover", styles.drawerClose)} onClick={(e) => !loading && onCancel && onCancel(e as any)}>
+            <SvgIcon className={"svgIcon"} src={SvgClose} />
+          </button>
+        }
+        onClose={(e) => !loading && onCancel && onCancel(e as any)}
+      >
+        <div className={styles.drawerBody}>
+          {content}
+          <div className={styles.drawerFooter}>
+            <button className={cx("btnTxt", styles.drawerFooterCancel)} disabled={loading} onClick={(e) => !loading && onCancel && onCancel(e as any)}>
+              {t("trade.cancel")}
+            </button>
+            <button className={cx("btnTxt", styles.drawerFooterConfirm)} disabled={loading || isConfirmDisabled} onClick={handleConfirm}>
+              {t("confirm")}
+            </button>
+          </div>
+        </div>
+      </Drawer>
+    );
+  }
+
+  return (
+    <Modal
+      open={open}
+      title={t("trade.orderModify")}
+      width={440}
+      centered
+      className={styles.main}
+      closeIcon={<SvgIcon className={"svgIcon"} src={SvgClose} />}
+      onCancel={(e) => !loading && onCancel && onCancel(e)}
+      okButtonProps={{ disabled: isConfirmDisabled }}
+      onOk={handleConfirm}
+      {...rest}
+    >
+      {content}
     </Modal>
   );
 };

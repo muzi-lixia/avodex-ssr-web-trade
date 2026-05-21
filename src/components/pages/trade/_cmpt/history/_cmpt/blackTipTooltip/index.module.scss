@@ -1,0 +1,16 @@
+.blackTipTooltip {
+  :global {
+    .ant-tooltip-inner {
+      width: 420px;
+
+      @media (max-width: 768px) {
+        max-width: 80vw;
+      }
+    }
+  }
+}
+.blackTipTooltipWrapper {
+  line-height: 14px;
+  height: 14px;
+  cursor: help;
+}

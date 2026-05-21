@@ -68,7 +68,7 @@ const Main: React.FC<Props> = ({ lay, setLay }) => {
   const t = useTranslation();
   const $log = useRecord("/components/pages/trade/_cmpt/order/depthNormal/index.tsx");
 
-  const { breakpoint, layout } = store.app;
+  const { breakpoint, layout, isH5 } = store.app;
   const { name, currentConfig, isEtf } = store.market;
   const { tradeRecent, depthAsks, depthBids, layoutAdvancedActiveKey, layoutH5ActiveKey, isDepthShowTotalPrice } = store.trade;
   const { openOrder } = store.balances;
@@ -671,10 +671,9 @@ const Main: React.FC<Props> = ({ lay, setLay }) => {
   // }, [name, isEtf]);
 
   const isHide = useMemo(() => {
-    //isH5
+    //isH5 - 新设计中订单簿始终显示
     if (breakpoint === BreakpointEnum.sm) {
-      if (layoutH5ActiveKey !== LayoutH5ActiveKeyEnum.order) return true;
-      else return false;
+      return false;
     }
     //专业版布局
     if (layout === LayoutEnum.advanced) {
@@ -684,17 +683,31 @@ const Main: React.FC<Props> = ({ lay, setLay }) => {
     }
 
     return false;
-  }, [breakpoint, layoutH5ActiveKey, layout, layoutAdvancedActiveKey]);
+  }, [breakpoint, layout, layoutAdvancedActiveKey]);
   if (isHide) return <></>;
 
   return (
-    <div className={styles.main}>
-      <CMPT_Option atvLay={lay} onLayChange={(lay) => setLay(lay)} depthMerge={depthMerge} setDepthMerge={setDepthMerge} />
+    <div className={cx(styles.main, isH5 && styles.main_h5)}>
+      {!isH5 && <CMPT_Option atvLay={lay} onLayChange={(lay) => setLay(lay)} depthMerge={depthMerge} setDepthMerge={setDepthMerge} />}
       <div className={styles.nav}>
-        <AzFontScale isLoop>{t("trade.price") + (coinBuy.length < 7 ? `(${coinBuy})` : "")}</AzFontScale>
-        <AzFontScale isLoop>{t("trade.amount") + (coinSell.length < 7 ? `(${isDepthShowTotalPrice ? coinBuy : coinSell})` : "")}</AzFontScale>
-        {/*<AzFontScale isLoop>{t("trade.total") + (coinSell.length < 7 ? `(${coinSell})` : "")}</AzFontScale>*/}
-        <DepthTotalUnitSwitch />
+        {isH5 ? (
+          <>
+            <div className={styles.navItem}>
+              <span>{t("trade.price")}</span>
+              {coinBuy.length < 7 && <span>({coinBuy})</span>}
+            </div>
+            <div className={styles.navItem}>
+              <span>{t("trade.amount")}</span>
+              {(isDepthShowTotalPrice ? coinBuy : coinSell).length < 7 && <span>({isDepthShowTotalPrice ? coinBuy : coinSell})</span>}
+            </div>
+          </>
+        ) : (
+          <>
+            <AzFontScale isLoop>{t("trade.price") + (coinBuy.length < 7 ? `(${coinBuy})` : "")}</AzFontScale>
+            <AzFontScale isLoop>{t("trade.amount") + (coinSell.length < 7 ? `(${isDepthShowTotalPrice ? coinBuy : coinSell})` : "")}</AzFontScale>
+            <DepthTotalUnitSwitch />
+          </>
+        )}
       </div>
 
       <div className={styles.content}>
@@ -731,6 +744,7 @@ const Main: React.FC<Props> = ({ lay, setLay }) => {
           </>
         )}
       </div>
+      {isH5 && <CMPT_Option atvLay={lay} onLayChange={(lay) => setLay(lay)} depthMerge={depthMerge} setDepthMerge={setDepthMerge} />}
     </div>
   );
 };

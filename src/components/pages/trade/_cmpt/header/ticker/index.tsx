@@ -211,9 +211,21 @@ const Main: React.FC = () => {
     closeGuide();
   }, [isNumberIndent]);
 
+  if (store.app.isH5) {
+    return (
+      <>
+        <div className={styles.h5TickerPrice}>
+          <span className={obj24hChange.cls}>{objCurrPrice.lab}</span>
+          {obj24hChange.lab && <span className={obj24hChange.cls}>{obj24hChange.lab}</span>}
+        </div>
+        {store.trade.isH5Expanded && <div className={styles.h5TickerDetail}>{elUl}</div>}
+      </>
+    );
+  }
+
   return (
     <>
-      {!store.app.isH5 && <Star symbol={name} className={styles.star} placement="bottomLeft" isStarEmpty={true} />}
+      <Star symbol={name} className={styles.star} placement="bottomLeft" isStarEmpty={true} />
 
       <div className={styles.price}>
         <Popover
@@ -243,13 +255,9 @@ const Main: React.FC = () => {
         <div>{objCurrPrice.convert}</div>
       </div>
 
-      {store.app.isH5 ? (
-        elUl
-      ) : (
-        <AzScrollArrow resetEffect={name} className={styles.content}>
-          {elUl}
-        </AzScrollArrow>
-      )}
+      <AzScrollArrow resetEffect={name} className={styles.content}>
+        {elUl}
+      </AzScrollArrow>
     </>
   );
 };

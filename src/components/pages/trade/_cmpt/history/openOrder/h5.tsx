@@ -131,10 +131,15 @@ const Main: React.FC<Props> = ({
                     <CMPT_btnPair disabled={disabled} symbol={doc.symbol} />
 
                     <div>
-                      <button disabled={disabled} className={"btnTxt"} onClick={() => handleClickEdit(doc)} style={{ marginInlineEnd: "10px" }}>
+                      <button
+                        disabled={disabled}
+                        className={cx("btnTxt", styles.actionBtn)}
+                        onClick={() => handleClickEdit(doc)}
+                        style={{ marginInlineEnd: "10px" }}
+                      >
                         <AzSvg icon="edit" />
                       </button>
-                      <button disabled={disabled} className={"btnTxt"} onClick={() => handleCancelOne(doc.orderId)}>
+                      <button disabled={disabled} className={cx("btnTxt", styles.actionBtn)} onClick={() => handleCancelOne(doc.orderId)}>
                         <AzSvg icon="delete" />
                       </button>
                     </div>

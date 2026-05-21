@@ -2,10 +2,10 @@
   > p {
     margin: 0;
     color: var(--az-colorv2-text-secondary);
-    font-weight: 500;
+    font-weight: 400;
     font-size: 14px;
     line-height: 22px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
 
   > div {
@@ -19,17 +19,17 @@
       white-space: nowrap;
       width: 100%;
       justify-content: space-between;
-      font-weight: 500;
+      font-weight: 400;
       font-size: 14px;
       line-height: 20px;
-      padding: 10px 12px;
+      padding: 6px 12px;
       color: var(--az-colorv2-text-primary);
-      background-color: var(--az-theme-text-color-008);
-      border-radius: 3px;
+      background-color: var(--az-colorv2-bg-elevated);
+      border-radius: 4px;
 
-      [data-theme="light"] & {
-        background-color: #f8f8f8;
-      }
+      // [data-theme="light"] & {
+      //   background-color: #f8f8f8;
+      // }
     }
 
     > span {

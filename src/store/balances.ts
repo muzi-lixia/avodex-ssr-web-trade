@@ -53,7 +53,6 @@ export enum AccountEnum {
   spot = "SPOT",
   lever = "LEVER",
   futures_u = "FUTURES_U",
-  futures_c = "FUTURES_C",
   finance = "FINANCE",
 }
 

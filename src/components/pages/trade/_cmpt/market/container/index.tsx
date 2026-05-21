@@ -240,7 +240,7 @@ const Main: React.FC<Props> = ({ keyword, sortBy, tabCfg, isShowVolume, isHidden
       records.map((item) => {
         const marketName = item.s;
         const theMarket = config[marketName]; //找到市场的对应配置
-        if (!theMarket || !/^(FULL)$/.test(theMarket.displayLevel)) return;
+        if (!store.market.isMarketVisible(theMarket, { allowSearch: false })) return;
         retAry.push(item);
       });
 
@@ -261,7 +261,7 @@ const Main: React.FC<Props> = ({ keyword, sortBy, tabCfg, isShowVolume, isHidden
       tickers.map((item) => {
         const symbol = item.s;
         const theMarket = config[symbol]; //找到市场的对应配置
-        if (!theMarket || theMarket.state === "DELISTED" || !/^(FULL|SEARCH)$/.test(theMarket.displayLevel)) return; //剔除不存在或者隐藏
+        if (!store.market.isMarketVisible(theMarket)) return; //剔除不存在或者隐藏
         records.push(item);
       });
 
@@ -283,7 +283,7 @@ const Main: React.FC<Props> = ({ keyword, sortBy, tabCfg, isShowVolume, isHidden
       if (tabCfg.key === "user" && !symbolStar.find((obj) => obj === symbol)) return;
 
       const theMarket = config[symbol]; //找到市场的对应配置
-      if (!theMarket || theMarket.state === "DELISTED" || !/^(FULL|SEARCH)$/.test(theMarket.displayLevel)) return; //剔除不存在或者隐藏
+      if (!store.market.isMarketVisible(theMarket)) return; //剔除不存在或者隐藏
 
       if (tabCfg.key === "etf" && !store.market.isEtfSymbolFnNew(theMarket.symbol)) return;
 
@@ -310,7 +310,10 @@ const Main: React.FC<Props> = ({ keyword, sortBy, tabCfg, isShowVolume, isHidden
       const records: TickerProps[] = [];
       searchList.map((item) => {
         const doc = tickerObj[item.bizId + ""];
-        if (doc) records.push(doc);
+        if (!doc) return;
+        const marketCfg = config[doc.s];
+        if (!store.market.isMarketVisible(marketCfg)) return;
+        records.push(doc);
       });
       if (sortBy) return doSortArray(records, sortBy);
       return records;

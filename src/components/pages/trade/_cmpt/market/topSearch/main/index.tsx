@@ -27,7 +27,7 @@ const Main: React.FC<Props> = ({ records, isShowVolume }) => {
         const doc = tickers.find((obj) => obj.s === marketName);
         if (!doc) return;
         const theMarket = config[doc.s]; //找到市场的对应配置
-        if (!theMarket || theMarket.state === "DELISTED" || !/^(FULL)$/.test(theMarket.displayLevel)) return; //剔除不存在或者隐藏
+        if (!store.market.isMarketVisible(theMarket, { allowSearch: false })) return; //剔除不存在或者隐藏
         ary.push(doc);
       });
 

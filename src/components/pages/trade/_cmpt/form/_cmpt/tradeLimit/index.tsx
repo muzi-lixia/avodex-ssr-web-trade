@@ -7,7 +7,7 @@ import store from "store";
 import { $g } from "utils/statistics";
 import { post_order } from "api/v4/order";
 import Storage from "utils/storage";
-import { Checkbox } from "antd";
+import { Checkbox, Drawer } from "antd";
 // import AzSvg from "components/az/svg";
 import ModalAlert from "components/antd/modal/alert";
 import AppInputNumber from "components/app/input/number";
@@ -42,6 +42,7 @@ const Main: React.FC<Props> = ({ className, tradeSide, onSuccess }) => {
   const { name, type, currentConfig } = store.market;
   const { tradeRecent, tradeRecentOnce, orderConfirm_limit } = store.trade;
   const { isLogin } = store.user;
+  const { isH5 } = store.app;
 
   const { coinQuantityUpperCase, coinPriceUpperCase, coinQuantityPrecisionMarket, coinPricePrecisionMarket, coinPricePrecisionCurrency, coinQuantityFilter } =
     useCoinMemo();
@@ -71,6 +72,8 @@ const Main: React.FC<Props> = ({ className, tradeSide, onSuccess }) => {
   // }, [isBuy]); //样式
 
   const [loading, setLoading] = useState(false);
+  const [confirmDrawerOpen, setConfirmDrawerOpen] = useState(false);
+  const [confirmChecked, setConfirmChecked] = useState(false);
 
   const [price, setPrice] = useState("");
   const [amount, setAmount] = useState("");
@@ -298,6 +301,75 @@ const Main: React.FC<Props> = ({ className, tradeSide, onSuccess }) => {
   });
 
   const checkRiskTip = useModalRiskTip();
+  const handleCloseConfirmDrawer = useCallback(() => {
+    setConfirmDrawerOpen(false);
+  }, []);
+  const handleConfirmedSubmit = useCallback(() => {
+    if (+amount - +maxAmount > 0) return ModalAlert(t("trade.amountBigTip"));
+
+    //交易提示：最新成交价5%
+    if (tradeRecent && tradeRecent.p) {
+      const ts = 60 * 60 * 1000;
+      const obj = Storage.get("formOrder5TipTsObj");
+      const formOrder5TipTsObj: any = obj && typeof obj == "object" ? obj : {};
+      let checked = false;
+      if (isBuy) {
+        const attr = store.market.type + "_" + TradeSideEnum.buy;
+        const tsLimit = Date.now() - (formOrder5TipTsObj[attr] || 0) > ts;
+        if (+price - +tradeRecent.p * 1.05 > 0 && tsLimit) {
+          return ModalAlert.confirm({
+            content: (
+              <div className={styles.order5Tips}>
+                <div>{t("trade.tradeAlertBuy")}</div>
+                <Checkbox className={styles.order5TipsCheckbox} onChange={(e) => (checked = e.target.checked)}>
+                  {t("trade.hourNoTips")}
+                </Checkbox>
+              </div>
+            ),
+            onOk: (clsoe) => {
+              clsoe();
+              apiResPostOrder();
+              if (checked) {
+                formOrder5TipTsObj[attr] = Date.now();
+                Storage.set("formOrder5TipTsObj", formOrder5TipTsObj);
+              }
+            },
+          });
+        }
+      } else {
+        const attr = store.market.type + "_" + TradeSideEnum.sell;
+        const tsLimit = Date.now() - (formOrder5TipTsObj[attr] || 0) > ts;
+        if (+price - +tradeRecent.p * 0.95 < 0 && tsLimit) {
+          return ModalAlert.confirm({
+            content: (
+              <div className={styles.order5Tips}>
+                <div>{t("trade.tradeAlertSell")}</div>
+                <Checkbox className={styles.order5TipsCheckbox} onChange={(e) => (checked = e.target.checked)}>
+                  {t("trade.hourNoTips")}
+                </Checkbox>
+              </div>
+            ),
+            onOk: (clsoe) => {
+              clsoe();
+              apiResPostOrder();
+              if (checked) {
+                formOrder5TipTsObj[attr] = Date.now();
+                Storage.set("formOrder5TipTsObj", formOrder5TipTsObj);
+              }
+            },
+          });
+        }
+      }
+    }
+
+    apiResPostOrder();
+  }, [amount, maxAmount, t, tradeRecent, isBuy, price, apiResPostOrder]);
+  const handleDrawerConfirm = useCallback(() => {
+    handleCloseConfirmDrawer();
+    store.trade.updateState({ orderConfirm_limit: !confirmChecked });
+    Storage.set("orderConfirm_limit", !confirmChecked);
+    handleConfirmedSubmit();
+  }, [confirmChecked, handleCloseConfirmDrawer, handleConfirmedSubmit]);
   const handleSubmit = useCallback(() => {
     if (btnSubmitDisabled || isErrAmountMemo) return;
     if (!isLogin) {
@@ -313,7 +385,13 @@ const Main: React.FC<Props> = ({ className, tradeSide, onSuccess }) => {
     start();
 
     function start() {
-      if (!orderConfirm_limit) return todo();
+      if (!orderConfirm_limit) return handleConfirmedSubmit();
+
+      if (isH5) {
+        setConfirmChecked(!orderConfirm_limit);
+        setConfirmDrawerOpen(true);
+        return;
+      }
 
       let checked = !orderConfirm_limit;
 
@@ -326,17 +404,9 @@ const Main: React.FC<Props> = ({ className, tradeSide, onSuccess }) => {
           close();
           store.trade.updateState({ orderConfirm_limit: !checked });
           Storage.set("orderConfirm_limit", !checked);
-          todo();
+          handleConfirmedSubmit();
         },
-        closeIcon: (
-          <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12.1562" r="12" fill="var(--az-colorv2-bg-surface)" />
-            <path
-              d="M15.3459 16.4582C15.6099 16.7222 16.0379 16.7222 16.3019 16.4582C16.5659 16.1942 16.5659 15.7662 16.3019 15.5022L12.956 12.1563L16.302 8.81026C16.566 8.54627 16.566 8.11825 16.302 7.85426C16.038 7.59027 15.61 7.59027 15.346 7.85426L12 11.2003L8.65398 7.85424C8.38999 7.59025 7.96198 7.59025 7.69799 7.85424C7.434 8.11824 7.434 8.54625 7.69799 8.81024L11.044 12.1563L7.69809 15.5023C7.4341 15.7662 7.4341 16.1943 7.69809 16.4583C7.96208 16.7222 8.39009 16.7222 8.65408 16.4583L12 13.1123L15.3459 16.4582Z"
-              fill="var(--az-colorv2-text-secondary)"
-            />
-          </svg>
-        ),
+        closeIcon: <SvgIcon className={"svgIcon"} src={SvgClose} />,
         content: (
           <div className={styles.orderConfirm}>
             <div>
@@ -376,67 +446,6 @@ const Main: React.FC<Props> = ({ className, tradeSide, onSuccess }) => {
         ),
       });
     }
-
-    function todo() {
-      if (+amount - +maxAmount > 0) return ModalAlert(t("trade.amountBigTip"));
-
-      //交易提示：最新成交价5%
-      if (tradeRecent && tradeRecent.p) {
-        const ts = 60 * 60 * 1000;
-        const obj = Storage.get("formOrder5TipTsObj");
-        const formOrder5TipTsObj: any = obj && typeof obj == "object" ? obj : {};
-        let checked = false;
-        if (isBuy) {
-          const attr = store.market.type + "_" + TradeSideEnum.buy;
-          const tsLimit = Date.now() - (formOrder5TipTsObj[attr] || 0) > ts;
-          if (+price - +tradeRecent.p * 1.05 > 0 && tsLimit) {
-            return ModalAlert.confirm({
-              content: (
-                <div className={styles.order5Tips}>
-                  <div>{t("trade.tradeAlertBuy")}</div>
-                  <Checkbox className={styles.order5TipsCheckbox} onChange={(e) => (checked = e.target.checked)}>
-                    {t("trade.hourNoTips")}
-                  </Checkbox>
-                </div>
-              ),
-              onOk: (clsoe) => {
-                clsoe();
-                apiResPostOrder();
-                if (checked) {
-                  formOrder5TipTsObj[attr] = Date.now();
-                  Storage.set("formOrder5TipTsObj", formOrder5TipTsObj);
-                }
-              },
-            });
-          }
-        } else {
-          const attr = store.market.type + "_" + TradeSideEnum.sell;
-          const tsLimit = Date.now() - (formOrder5TipTsObj[attr] || 0) > ts;
-          if (+price - +tradeRecent.p * 0.95 < 0 && tsLimit) {
-            return ModalAlert.confirm({
-              content: (
-                <div className={styles.order5Tips}>
-                  <div>{t("trade.tradeAlertSell")}</div>
-                  <Checkbox className={styles.order5TipsCheckbox} onChange={(e) => (checked = e.target.checked)}>
-                    {t("trade.hourNoTips")}
-                  </Checkbox>
-                </div>
-              ),
-              onOk: (clsoe) => {
-                clsoe();
-                apiResPostOrder();
-                if (checked) {
-                  formOrder5TipTsObj[attr] = Date.now();
-                  Storage.set("formOrder5TipTsObj", formOrder5TipTsObj);
-                }
-              },
-            });
-          }
-        }
-      }
-
-      apiResPostOrder();
-    }
   }, [
     isLogin,
     btnSubmitDisabled,
@@ -453,6 +462,8 @@ const Main: React.FC<Props> = ({ className, tradeSide, onSuccess }) => {
     isErrAmountMemo,
     feeAndCoin,
     checkRiskTip,
+    isH5,
+    handleConfirmedSubmit,
   ]);
 
   useEffect(() => {
@@ -550,6 +561,67 @@ const Main: React.FC<Props> = ({ className, tradeSide, onSuccess }) => {
           <LoginOrRegister isBuy={isBuy} />
         )}
       </div>
+
+      {isH5 && (
+        <Drawer
+          className={styles.orderConfirmDrawer}
+          closable={false}
+          title={t("trade.orderConfirm")}
+          placement="bottom"
+          height="auto"
+          open={confirmDrawerOpen}
+          onClose={handleCloseConfirmDrawer}
+          extra={
+            <button className={cx("btnTxt", "btnHover", styles.orderConfirmDrawerClose)} onClick={handleCloseConfirmDrawer}>
+              <SvgIcon className={"svgIcon"} src={SvgClose} />
+            </button>
+          }
+        >
+          <div className={styles.orderConfirmDrawerBody}>
+            <div className={cx(styles.orderConfirm, styles.orderConfirmDrawerContent)}>
+              <div>
+                <span>{store.market.formatName(store.market.name)}</span>
+                <span className={isBuy ? ClsUpDownEnum.up : ClsUpDownEnum.down}>{isBuy ? t("trade.buy") : t("trade.sell")}</span>
+              </div>
+
+              <div>
+                <div>
+                  <div>{t("trade.type")}</div>
+                  <div>{t("trade.limitOrder")}</div>
+                </div>
+                <div>
+                  <div>{t("trade.orderPrice")}</div>
+                  <div>{price + " " + coinPriceUpperCase}</div>
+                </div>
+                <div>
+                  <div>{t("trade.amount")}</div>
+                  <div>{amount + " " + coinQuantityUpperCase}</div>
+                </div>
+                <div>
+                  <div>{t("trade.totalVol")}</div>
+                  <div>{total + " " + coinPriceUpperCase}</div>
+                </div>
+                <div>
+                  <div>{t("trade.estimatedFee")}</div>
+                  <div>{feeAndCoin}</div>
+                </div>
+              </div>
+
+              <div>
+                <Checkbox className={styles.orderConfirmCheckbox} checked={confirmChecked} onChange={(e) => setConfirmChecked(e.target.checked)}>
+                  {t("trade.noAlertAndSetTip")}
+                </Checkbox>
+              </div>
+            </div>
+
+            <div className={styles.orderConfirmDrawerFooter}>
+              <button className={cx("btnTxt")} onClick={handleDrawerConfirm}>
+                {t("confirm")}
+              </button>
+            </div>
+          </div>
+        </Drawer>
+      )}
     </div>
   );
 };

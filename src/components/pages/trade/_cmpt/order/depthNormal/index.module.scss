@@ -57,3 +57,21 @@
 }
 .scrollWindowOnlyBid {
 }
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.main_h5 {
+  .nav {
+    > *:nth-child(1) {
+      width: 50%;
+    }
+
+    > *:nth-child(2) {
+      width: 50%;
+    }
+  }
+}
