@@ -6,7 +6,8 @@ import SvgIcon from "@az/SvgIcon";
 import store from "store";
 import ConfirmModal from "./ConfirmModal";
 import SvgSmartParam from "@/assets/icon-svg/gridBot/smart-param.svg";
-import { get_balance, post_createBot, post_profitPreview, post_smartParams, type BalanceRes, type ProfitPreviewRes } from "@/api/grid";
+import { post_createBot, post_profitPreview, post_smartParams, type ProfitPreviewRes } from "@/api/grid";
+import { get_botBalances, type BotBalance } from "@/api/bot";
 import styles from "./index.module.scss";
 
 const { useTranslation } = Hooks;
@@ -51,14 +52,17 @@ const CreateForm: React.FC<Props> = ({ onBack }) => {
   const [investment, setInvestment] = useState<string>("");
   const [smart, setSmart] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [balance, setBalance] = useState<BalanceRes | null>(null);
+  const [balance, setBalance] = useState<BotBalance | null>(null);
   const [previewData, setPreviewData] = useState<ProfitPreviewRes | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!isLogin) return;
-    get_balance("USDT")
-      .then(setBalance)
+    get_botBalances()
+      .then((res) => {
+        const usdt = res?.balances?.find((b) => (b.currency || "").toUpperCase() === "USDT") || null;
+        setBalance(usdt);
+      })
       .catch(() => setBalance(null));
   }, [isLogin]);
 
@@ -84,7 +88,7 @@ const CreateForm: React.FC<Props> = ({ onBack }) => {
   }, [minPrice, maxPrice, gridCount, symbolTicker]);
 
   const availableUsdt = useMemo(() => {
-    const a = parseFloat(balance?.total_available || "");
+    const a = parseFloat(balance?.available || "");
     return Number.isFinite(a) ? a : 0;
   }, [balance]);
 

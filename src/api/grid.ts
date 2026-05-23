@@ -29,15 +29,6 @@ export interface ProfitPreviewRes {
   grid_step: string;
 }
 
-export interface BalanceRes {
-  asset: string;
-  total_available: string;
-  in_grid_pool: string;
-  in_main_account: string;
-  locked_in_running_bots: string;
-  user_id: number;
-}
-
 export interface CreateBotReq {
   symbol: string;
   name: string;
@@ -90,8 +81,6 @@ export const post_smartParams = (body: { symbol: string; investment_usdt: string
 
 export const post_profitPreview = (body: { symbol: string; lower_price: string; upper_price: string; grid_count: number }) =>
   AzAxios.post(`${BASE}/profit-preview`, body) as Promise<ProfitPreviewRes>;
-
-export const get_balance = (asset = "USDT") => AzAxios.get(`${BASE}/account/balance`, { params: { asset }, ...withUid() }) as Promise<BalanceRes>;
 
 export const post_createBot = (body: CreateBotReq) => AzAxios.post(`${BASE}/bots`, body, { ...withUid(), errorPop: true }) as Promise<CreateBotRes>;
 
