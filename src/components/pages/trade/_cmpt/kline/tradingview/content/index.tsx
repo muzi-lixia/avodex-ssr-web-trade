@@ -320,7 +320,7 @@ const Main: React.FC<Props> = ({ option, action, updateTv }) => {
               has_weekly_and_monthly: true,
               session: "24x7", //商品交易时间
               volume_precision: 2, //整数显示此商品的成交量数字的小数位。0表示只显示整数。1表示保留小数位的1个数字字符，等等。
-              exchange: "AZ", //某个交易所的略称
+              exchange: "AVO", //某个交易所的略称
             });
           })
             .then((data) => onSymbolResolvedCallback(data))
