@@ -19,6 +19,11 @@ export enum TradeTypeEnum { //交易类型
   trailingStop = "ENTRUST_TRACK",
 }
 
+export enum TradePanelEnum { //右侧面板顶层 Tab：现货 / AI 智能交易
+  spot = "SPOT",
+  aiTrading = "AI_TRADING",
+}
+
 export enum TradeOrderStateEnum { //交易订单状态
   NEW = "NEW", //新建 -  资金冻结成功之后的状态，此时还未提交到撮合。
   PLACED = "PLACED", //已委托 - 订单成功的挂在了订单簿上
@@ -112,6 +117,7 @@ interface StateProps {
   //
   layoutAdvancedActiveKey: LayoutAdvancedActiveKeyEnum;
   layoutH5ActiveKey: LayoutH5ActiveKeyEnum;
+  isH5Expanded: boolean;
   //
   orderConfirm_limit: boolean;
   orderConfirm_market: boolean;
@@ -120,6 +126,7 @@ interface StateProps {
   //
   searchHistory: SearchHistoryItemProps[];
   isDepthShowTotalPrice: boolean;
+  aiDrawerOpen: boolean;
 }
 
 let loading_getTicker24h = false;
@@ -142,6 +149,7 @@ const trade = makeAutoObservable(
     //layout布局参数
     layoutAdvancedActiveKey: LayoutAdvancedActiveKeyEnum.order as StateProps["layoutAdvancedActiveKey"], //专业版视图激活的tab
     layoutH5ActiveKey: LayoutH5ActiveKeyEnum.chart as StateProps["layoutH5ActiveKey"], //H5视图激活的tab
+    isH5Expanded: false as StateProps["isH5Expanded"], //H5视图是否展开详情和图表
     //下单确认
     orderConfirm_limit: true as StateProps["orderConfirm_limit"], //限价单确认对话框
     orderConfirm_market: true as StateProps["orderConfirm_market"], //市价单确认对话框
@@ -150,6 +158,7 @@ const trade = makeAutoObservable(
     //搜索历史
     searchHistory: [] as StateProps["searchHistory"], //搜索历史
     isDepthShowTotalPrice: false as StateProps["isDepthShowTotalPrice"], //盘口深度是否显示累计价格
+    aiDrawerOpen: false as StateProps["aiDrawerOpen"], //H5 AI智能交易创建抽屉是否打开
 
     updateState(payload: Partial<StateProps>) {
       for (const va in payload) {

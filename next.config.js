@@ -93,10 +93,6 @@ const nextConfig = {
         destination: `${host}/${path}/:slug*`,
       };
     });
-    list.push({
-      source: `/service/:slug*`,
-      destination: `${host}/service/:slug*`,
-    });
     return list;
   },
   async redirects() {

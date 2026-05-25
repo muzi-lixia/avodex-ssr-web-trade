@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import cx from "classnames";
 import { Hooks } from "@az/base";
 const { useTranslation } = Hooks;
-// import store from "store";
+import store from "store";
 
 import { Checkbox, Dropdown, MenuProps } from "antd";
 import AzSvg from "@/components/az/svg";
@@ -43,6 +43,7 @@ const Main: React.FC<Props> = ({
   disabled,
 }) => {
   const t = useTranslation();
+  const { config } = store.market;
 
   const hasItem = useMemo(() => {
     return !!(items && items.length);
@@ -128,12 +129,14 @@ const Main: React.FC<Props> = ({
               return (
                 <div key={doc.orderId} className={styles_h5.card}>
                   <div className={styles_h5.cardNav}>
-                    <CMPT_btnPair disabled={disabled} symbol={doc.symbol} />
+                    <CMPT_btnPair disabled={disabled} symbol={doc.symbol} showBlackTipTooltip />
 
                     <div>
-                      <button disabled={disabled} className={"btnTxt"} onClick={() => handleClickEdit(doc)} style={{ marginInlineEnd: "10px" }}>
-                        <AzSvg icon="edit" />
-                      </button>
+                      {!config?.[doc.symbol]?.isBlack && (
+                        <button disabled={disabled} className={"btnTxt"} onClick={() => handleClickEdit(doc)} style={{ marginInlineEnd: "10px" }}>
+                          <AzSvg icon="edit" />
+                        </button>
+                      )}
                       <button disabled={disabled} className={"btnTxt"} onClick={() => handleCancelOne(doc.orderId)}>
                         <AzSvg icon="delete" />
                       </button>

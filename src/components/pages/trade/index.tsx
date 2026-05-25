@@ -35,6 +35,11 @@ import styles from "./index.module.scss";
 
 import { TypeEnum } from "store/market";
 import { TradeFooter } from "./_cmpt/tradeFooter";
+import { Drawer } from "antd";
+import { Hooks } from "@az/base";
+import AiTrading from "./_cmpt/form/_cmpt/aiTrading";
+
+const { useTranslation } = Hooks;
 
 const FragmentCustom: React.FC<PropsWithChildren<{ slot: string }>> = ({ children }) => {
   return <>{children}</>;
@@ -42,6 +47,7 @@ const FragmentCustom: React.FC<PropsWithChildren<{ slot: string }>> = ({ childre
 
 const Main: React.FC = () => {
   const router = useRouter();
+  const t = useTranslation();
 
   const isMarketOpen = useMemo(() => {
     return store.market.isMarketOpenFn(store.market.currentConfig, store.app.time);
@@ -212,6 +218,26 @@ const Main: React.FC = () => {
           {/*)}*/}
           <AppModalRiskTip {...(store.trade.modalRiskTip || {})} updateProps={(props) => handleModalUpdateProps("modalRiskTip", props)} />
         </>
+      )}
+
+      {!loading && (
+        <Drawer
+          className={styles.aiDrawer}
+          closable={false}
+          title={null}
+          headerStyle={{ display: "none" }}
+          bodyStyle={{ padding: 0 }}
+          placement="bottom"
+          height="85vh"
+          open={store.trade.aiDrawerOpen}
+          onClose={() => store.trade.updateState({ aiDrawerOpen: false })}
+        >
+          <div className={styles.aiDrawerInner}>
+            <div className={styles.aiDrawerTitle}>{t("trade.aiTrading")}</div>
+            <div className={styles.aiDrawerDivider} />
+            <AiTrading />
+          </div>
+        </Drawer>
       )}
       {/* <TradeFooter /> */}
 

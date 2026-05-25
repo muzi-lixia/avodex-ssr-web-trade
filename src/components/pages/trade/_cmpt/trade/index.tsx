@@ -145,9 +145,9 @@ const Main: React.FC = () => {
   }, [name]);
 
   const isHide = useMemo(() => {
-    //isH5
+    //isH5 - 新设计中仅展开时且tab为trade才显示
     if (breakpoint === BreakpointEnum.sm) {
-      if (layoutH5ActiveKey !== LayoutH5ActiveKeyEnum.trade) return true;
+      if (!store.trade.isH5Expanded || layoutH5ActiveKey !== LayoutH5ActiveKeyEnum.trade) return true;
       else return false;
     }
     //专业版布局
@@ -158,7 +158,7 @@ const Main: React.FC = () => {
     }
 
     return false;
-  }, [breakpoint, layoutH5ActiveKey, layout, layoutAdvancedActiveKey]);
+  }, [breakpoint, layoutH5ActiveKey, layout, layoutAdvancedActiveKey, store.trade.isH5Expanded]);
   if (isHide) return <></>;
 
   return (

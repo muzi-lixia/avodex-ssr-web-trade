@@ -1,20 +1,46 @@
 .main {
   color: var(--az-colorv2-text-primary);
-  background-color: var(--az-theme-body-color);
+  background-color: var(--az-colorv2-bg-base);
+}
+
+.banner {
+  position: sticky;
+  top: 10px;
+  z-index: 600;
+  margin-top: 12px;
+  padding: 8px 0;
+  background-color: var(--az-colorv2-bg-base);
+
+  &:empty {
+    display: none;
+  }
 }
 
 .header {
-  border-top: 2px solid var(--az-theme-body-color);
+  border-top: 4px solid var(--az-colorv2-bg-base);
   background-color: var(--az-colorv2-bg-surface);
 }
 
-.mainData {
-  background-color: var(--az-colorv2-bg-surface);
-  margin: 4px 0;
+.expandedTabs {
+  > *:nth-child(1) {
+    flex: 1;
+    display: flex;
 
-  .mainDataContent {
+    > button {
+      flex: 1;
+      text-align: center;
+      margin-inline-start: 0 !important;
+    }
+  }
+}
+
+.expanded {
+  background-color: var(--az-colorv2-bg-surface);
+  margin-bottom: 4px;
+
+  .expandedContent {
     position: relative;
-    height: 294px;
+    height: 460px;
 
     > div {
       display: flex;
@@ -26,17 +52,40 @@
       height: 100%;
       visibility: hidden;
 
-      &.mainDataContentVisible {
+      &.expandedContentVisible {
         visibility: visible;
       }
     }
   }
 }
 
+.body {
+  display: flex;
+  background-color: var(--az-colorv2-bg-surface);
+  margin-top: 4px;
+  min-height: 360px;
+
+  .orderBook {
+    width: 40%;
+    flex: none;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tradeForm {
+    width: 60%;
+    flex: none;
+    overflow: hidden;
+    border-inline-start: 1px solid var(--az-colorv2-border-disabled);
+  }
+}
+
 .history {
   background-color: var(--az-colorv2-bg-surface);
-  height: 100vh;
+  margin-top: 4px;
+  min-height: 300px;
   display: flex;
   flex-direction: column;
-  padding-bottom: 90px;
+  padding-bottom: 20px;
 }

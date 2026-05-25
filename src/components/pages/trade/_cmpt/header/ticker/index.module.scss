@@ -30,32 +30,56 @@
 
     > p {
       color: var(--az-colorv2-text-tertiary);
+      font-size: 11px;
       margin-bottom: 6px;
     }
   }
 
   [data-breakpoint="sm"] & {
-    padding: 3px 0;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    white-space: normal;
+    border-top: 1px solid var(--az-colorv2-border-disabled);
 
     > div {
-      display: flex;
-      justify-content: space-between;
-      margin: 6px 0;
-      padding-block: 0;
-      padding-inline: 4px 12px;
+      display: block;
+      width: 33.33%;
+      padding: 0;
+      margin-bottom: 10px;
 
       > p {
-        flex: none;
-        margin-block: 0;
-        margin-inline: 0 4px;
+        margin-bottom: 4px;
       }
       > div {
-        white-space: normal;
-        word-break: break-all;
-        text-align: var(--az-dir-text-right);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
   }
+}
+
+.h5TickerPrice {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 12px 0;
+
+  > span:first-child {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  > span:nth-child(2) {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+}
+
+.h5TickerDetail {
+  width: 100%;
 }
 
 .star {

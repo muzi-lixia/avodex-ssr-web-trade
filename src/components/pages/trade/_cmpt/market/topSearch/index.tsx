@@ -1,4 +1,4 @@
-import React, { HTMLAttributes, useCallback, useEffect, useState } from "react";
+import React, { HTMLAttributes, useCallback, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import cx from "classnames";
 import { Hooks } from "@az/base";
@@ -28,6 +28,7 @@ const Main: React.FC<Props> = ({ className, visible, setSearchInputFocus, isShow
 
   const { formatName, searchMarketHot, searchMarketHotSpot, getSearchMarketHot } = store.market;
   const { searchHistory, initSearchHistory, setSearchHistory } = store.trade;
+  const { config } = store.market;
 
   const [loading, setLoading] = useState(true);
   // const [records, setRecords] = useState<string[]>([]);
@@ -63,9 +64,17 @@ const Main: React.FC<Props> = ({ className, visible, setSearchInputFocus, isShow
     initSearchHistory();
   }, []);
 
+  const visibleSearchHistory = useMemo(() => {
+    if (!config) return [];
+    return searchHistory.filter((doc) => {
+      const symbolCfg = config[doc.symbol];
+      return store.market.isMarketVisible(symbolCfg, { allowSearch: true });
+    });
+  }, [searchHistory, config]);
+
   return (
     <div className={cx(styles.main, className, { [styles.hide]: !visible })} onMouseDown={setSearchInputFocus} onTouchStart={setSearchInputFocus}>
-      {!!searchHistory.length && (
+      {!!visibleSearchHistory.length && (
         <>
           <div className={styles.nav}>
             <div>{t("trade.searchHistory")}</div>
@@ -74,7 +83,7 @@ const Main: React.FC<Props> = ({ className, visible, setSearchInputFocus, isShow
             </button>
           </div>
           <div className={styles.history}>
-            {searchHistory.map((doc) => {
+            {visibleSearchHistory.map((doc) => {
               return (
                 <button key={doc.symbol + (doc.tag || "")} className={"btnTxt"} onClick={() => handleClickHistoryBtn(doc)}>
                   <span>{formatName(doc.symbol)}</span>

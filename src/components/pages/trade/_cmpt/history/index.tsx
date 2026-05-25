@@ -20,8 +20,12 @@ import CMPT_funds_lever from "./funds/lever";
 import CMPT_funds_nft from "./funds/nft";
 import CMPT_position from "./position";
 import CMPT_copyTrade from "./copyTrade";
+import CMPT_botOrder from "./botOrder";
 // import CMPT_subscription from "./subscription";
 // import CMPT_redemption from "./redemption";
+
+import SvgIcon from "@az/SvgIcon";
+import SvgBadgeNew from "@/assets/icon-svg/gridBot/badge-new.svg";
 
 import styles from "./index.module.scss";
 
@@ -34,6 +38,7 @@ enum HistoryTypeEnum {
   subscription = "subscription", //申购记录，etf
   redemption = "redemption", //赎回记录，etf
   copyTrade = "copyTrade", //我的跟单或带单
+  botOrder = "botOrder", //机器人订单 (网格交易)
 }
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -82,6 +87,18 @@ const Main: React.FC<Props> = ({ className }) => {
       label: t("trade.funds"),
     });
 
+    if (!isNft) {
+      ary.unshift({
+        key: HistoryTypeEnum.botOrder,
+        label: (
+          <span className={styles.botOrderTabLabel}>
+            {t("trade.aiTrading")}
+            <SvgIcon className={styles.botOrderTabBadge} src={SvgBadgeNew} />
+          </span>
+        ) as any,
+      });
+    }
+
     // if (isLever) {
     //   ary.push({
     //     key: HistoryTypeEnum.position,
@@ -101,7 +118,7 @@ const Main: React.FC<Props> = ({ className }) => {
     // }
 
     return ary;
-  }, [isLever, isEtf, openOrderCount, copyTradeCount, userStatus, isFollower]);
+  }, [isLever, isEtf, isNft, openOrderCount, copyTradeCount, userStatus, isFollower]);
 
   const isCheckboxVisible = useMemo(() => {
     return [HistoryTypeEnum.openOrder, HistoryTypeEnum.orderHistory, HistoryTypeEnum.tradeHistory, HistoryTypeEnum.copyTrade].includes(historyType);
@@ -237,6 +254,7 @@ const Main: React.FC<Props> = ({ className }) => {
               <CMPT_funds_lever clsUl={styles.ul} clsLi={styles.li} />
             ))}
           {historyType === HistoryTypeEnum.position && <CMPT_position />}
+          {historyType === HistoryTypeEnum.botOrder && <CMPT_botOrder clsUl={styles.ul} clsLi={styles.li} />}
           {/*{historyType === HistoryTypeEnum.subscription && <CMPT_subscription clsUl={styles.ul} clsLi={styles.li} />}*/}
           {/*{historyType === HistoryTypeEnum.redemption && <CMPT_redemption clsUl={styles.ul} clsLi={styles.li} />}*/}
         </div>

@@ -16,6 +16,7 @@ import AzLoading from "components/az/loading";
 import AzScrollBarY from "components/az/scroll/barY";
 import AppDivNoData from "components/app/div/noData";
 import WithPoint from "../../../_cmpt/withPoint";
+import BlackTipTooltip from "../../../_cmpt/blackTipTooltip";
 
 import styles from "./index.module.scss";
 
@@ -34,7 +35,8 @@ const Main: React.FC<Props> = ({ className, doc, clsLi, disabled, OrderStateMemo
   const router = useRouter();
   const t = useTranslation();
   // const { isLogin } = store.user;
-  const { formatName, isLever } = store.market;
+  const { formatName, isLever, config } = store.market;
+  const isBlack = useMemo(() => !!config?.[doc.symbol]?.isBlack, [config, doc.symbol]);
 
   const isNft = useMemo(() => doc.symbolType === "nft", [doc]);
   const getStateNode = useMemo(() => {
@@ -114,16 +116,20 @@ const Main: React.FC<Props> = ({ className, doc, clsLi, disabled, OrderStateMemo
       <div className={cx(clsLi, styles.nav)} onClick={() => !disabled && setIsOpen(!isOpen)}>
         <div className={cx(styles.arrow, { [styles.arrowOpen]: isOpen })}>{moment(doc.time).formatMs()}</div>
         <div>
-          <button
-            disabled={disabled}
-            className={"btnTxt"}
-            onClick={(e) => {
-              e.stopPropagation();
-              routerPush(router, { symbol: doc.symbol, isLever });
-            }}
-          >
-            {formatName(doc.symbol)}
-          </button>
+          <span className={styles.symbolWrap}>
+            <button
+              disabled={disabled}
+              className={"btnTxt"}
+              style={{ cursor: isBlack ? "text" : "" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isBlack) return;
+                routerPush(router, { symbol: doc.symbol, isLever });
+              }}
+            >
+              {formatName(doc.symbol)}
+            </button>
+          </span>
         </div>
         <div>{t("trade." + doc.type.toLocaleLowerCase())}</div>
         <div className={doc.side === TradeSideEnum.buy ? "up-color" : "down-color"}>{t("trade." + doc.side.toLocaleLowerCase())}</div>

@@ -41,7 +41,6 @@ const Main: React.FC<Props> = ({ children, onOpen, onClose, onReset, onSearch })
         closable={false}
         title={t("trade.filter")}
         placement="bottom"
-        height="300px"
         open={open}
         onClose={handleClose}
         extra={

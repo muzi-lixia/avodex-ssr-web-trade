@@ -1,2 +1,40 @@
 .main {
 }
+
+.panelTab {
+  display: flex;
+  align-items: center;
+  height: 33px;
+  margin-top: 4px;
+  border-bottom: 1px solid var(--az-colorv2-bg-elevated);
+}
+
+.panelTabBtn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-family: Inter-Regular, sans-serif;
+  font-weight: normal;
+  line-height: 33px;
+  height: 33px;
+  padding: 0;
+  color: var(--az-colorv2-text-secondary);
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.panelTabAtv {
+  color: var(--az-colorv2-text-primary);
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: var(--az-colorv2-text-primary);
+  }
+}

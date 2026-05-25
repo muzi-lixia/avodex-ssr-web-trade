@@ -8,7 +8,7 @@ const { Big, moment } = Util;
 import { upperCaseFirstLetter } from "utils/method";
 import { get_trade } from "api/v4/order";
 
-import { Modal, ModalProps, Tooltip } from "antd";
+import { Drawer, Modal, ModalProps, Tooltip } from "antd";
 import useAxiosCancelFun from "hooks/useAxiosCancelFun";
 // import AzSvg from "components/az/svg";
 import AzLoading from "components/az/loading";
@@ -36,6 +36,7 @@ interface Props extends ModalProps {
 const Main: React.FC<Props> = ({ doc, setDoc, ...rest }) => {
   const t = useTranslation();
   // const {isLogin} = store.user;
+  const { isH5 } = store.app;
 
   const isNft = useMemo(() => doc && doc.symbolType === "nft", [doc]);
   const [loading, setLoading] = useState(false);
@@ -87,18 +88,8 @@ const Main: React.FC<Props> = ({ doc, setDoc, ...rest }) => {
     };
   }, [doc]);
 
-  return (
-    <Modal
-      className={styles.main}
-      open={!!doc}
-      title={t("trade.transDetails")}
-      width={440}
-      centered
-      closeIcon={<SvgIcon className={"svgIcon"} src={SvgClose} />}
-      footer={null}
-      onCancel={() => !loading && setDoc(null)}
-      {...rest}
-    >
+  const content = (
+    <>
       <div className={styles.nav}>
         <span>{t("trade.orderNumber")}</span>
         <span>{doc?.orderId}</span>
@@ -157,6 +148,43 @@ const Main: React.FC<Props> = ({ doc, setDoc, ...rest }) => {
 
         {loading && <AzLoading />}
       </div>
+    </>
+  );
+
+  if (isH5) {
+    return (
+      <Drawer
+        className={styles.drawer}
+        open={!!doc}
+        title={t("trade.transDetails")}
+        placement="bottom"
+        height="80vh"
+        closable={false}
+        extra={
+          <button className={cx("btnTxt", "btnHover", styles.drawerClose)} onClick={() => !loading && setDoc(null)}>
+            <SvgIcon className={"svgIcon"} src={SvgClose} />
+          </button>
+        }
+        onClose={() => !loading && setDoc(null)}
+      >
+        {content}
+      </Drawer>
+    );
+  }
+
+  return (
+    <Modal
+      className={styles.main}
+      open={!!doc}
+      title={t("trade.transDetails")}
+      width={440}
+      centered
+      closeIcon={<SvgIcon className={"svgIcon"} src={SvgClose} />}
+      footer={null}
+      onCancel={() => !loading && setDoc(null)}
+      {...rest}
+    >
+      {content}
     </Modal>
   );
 };
