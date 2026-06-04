@@ -36,7 +36,7 @@ const nextConfig = {
     disableStaticImages: true,
   },
   i18n: {
-    locales: ["default", "en", "zh-HK", "ja", "ko"], // ["default", ...locales.map((obj) => obj.name)],
+    locales: ["default", "en", "zh-HK", "ja", "ko", "th"], // ["default", ...locales.map((obj) => obj.name)],
     defaultLocale: "default",
     localeDetection: false,
   },
