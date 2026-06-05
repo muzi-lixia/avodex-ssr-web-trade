@@ -3124,5 +3124,8 @@
   "footer.rights1": "エージェントエコノミーは、ここから始まる。",
   "WalletModal.qrLoginLink": "リンク・モバイル・デバイス",
   "WalletModal.qrLoginNote": "このQRコードやスクリーンショットを他人と共有しないでください。画面を共有していないか確認してください。",
-  "WalletModal.qrLoginWaitTitle": "財布でQRコードを承認..."
+  "WalletModal.qrLoginWaitTitle": "財布でQRコードを承認...",
+  "WalletModal.community": "beraBTC コミュニティ",
+  "header.community": "beraBTC コミュニティ",
+  "header.openclaw": "OpenClaw"
 }
